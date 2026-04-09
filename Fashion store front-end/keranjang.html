@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keranjang — LuxeMode</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <spa<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keranjang — LuxeMode</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">LM</span>
+      <div>
+        <h1>LuxeMode</h1>
+        <p>Fashion store front-end</p>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="index.html">Beranda</a>
+      <a href="produk.html">Produk</a>
+      <a href="keranjang.html" class="active">Keranjang</a>
+      <a href="komentar.html">Komentar</a>
+    </nav>
+
+    <button class="cart-pill" type="button">
+      🛍️ <span id="cartCount">0</span>
+    </button>
+  </header>
+
+  <main>
+    <section class="page-header">
+      <h1>Keranjang Belanja</h1>
+      <p>Kelola item belanja Anda</p>
+    </section>
+
+    <section class="section">
+      <div class="cart-layout">
+        <div class="cart-list" id="cartList">
+          <p class="empty-state">Keranjang Anda kosong. <a href="produk.html">Mulai belanja sekarang</a></p>
+        </div>
+
+        <aside class="cart-summary">
+          <div class="summary-box">
+            <h3>Ringkasan Pesanan</h3>
+            <div class="summary-item">
+              <span>Item:</span>
+              <strong id="summaryItems">0</strong>
+            </div>
+            <div class="summary-item">
+              <span>Total:</span>
+              <strong id="summaryTotal">Rp 0</strong>
+            </div>
+
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <strong id="subtotal">Rp 0</strong>
+            </div>
+            <div class="summary-row">
+              <span>Pajak (10%)</span>
+              <strong id="tax">Rp 0</strong>
+            </div>
+            <div class="summary-item total">
+              <span>Grand Total</span>
+              <strong id="total">Rp 0</strong>
+            </div>
+
+            <button class="btn primary full-width" id="checkoutBtn" type="button" disabled>
+              Lanjut Pembayaran
+            </button>
+            <button class="btn ghost full-width" id="clearCart" type="button" style="margin-top:12px;">
+              Kosongkan Keranjang
+            </button>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 LuxeMode. Front-end fashion e-commerce.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>n class="brand-mark">LM</span>
+      <div>
+        <h1>LuxeMode</h1>
+        <p>Fashion store front-end</p>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="index.html">Beranda</a>
+      <a href="produk.html">Produk</a>
+      <a href="keranjang.html" class="active">Keranjang</a>
+      <a href="komentar.html">Komentar</a>
+    </nav>
+
+    <button class="cart-pill" id="cartToggle" type="button">
+      🛍️ <span id="cartCount">0</span>
+    </button>
+  </header>
+
+  <main>
+    <section class="page-header">
+      <h1>Keranjang Belanja</h1>
+      <p>Kelola item belanja Anda</p>
+    </section>
+
+    <section class="section">
+      <div class="cart-container">
+        <div class="cart-items" id="cartItems">
+          <p class="empty-state">Keranjang Anda kosong. <a href="produk.html">Mulai belanja sekarang</a></p>
+        </div>
+
+        <aside class="cart-summary">
+          <div class="summary-box">
+            <h3>Ringkasan Pesanan</h3>
+            <div class="summary-item">
+              <span>Subtotal:</span>
+              <strong id="subtotal">Rp 0</strong>
+            </div>
+            <div class="summary-item">
+              <span>Pajak (10%):</span>
+              <strong id="tax">Rp 0</strong>
+            </div>
+            <div class="summary-item total">
+              <span>Total:</span>
+              <strong id="total">Rp 0</strong>
+            </div>
+            <button class="btn primary full-width" id="checkoutBtn" disabled>
+              Lanjut Pembayaran
+            </button>
+            <a href="produk.html" class="btn ghost full-width">Lanjut Belanja</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 LuxeMode. Front-end fashion e-commerce.</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="pages/keranjang.js"></script>
+</body>
+</html>
