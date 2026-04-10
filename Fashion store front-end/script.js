@@ -11,7 +11,7 @@ const PRODUCTS = [
     description: "Gaun satin mewah dengan siluet elegan untuk tampilan premium.",
     price: 749000,
     category: "women",
-    image: svgImage("Silk Evening Dress", "#f1dfc4", "#241c18")
+    image: "img/2.avif"
   },
   {
     id: 2,
@@ -19,7 +19,7 @@ const PRODUCTS = [
     description: "Set modern dengan potongan rapi untuk gaya formal kasual.",
     price: 629000,
     category: "men",
-    image: svgImage("Urban Tailored Set", "#d8d1c5", "#17171d")
+    image: "img/3.avif"
   },
   {
     id: 3,
@@ -27,7 +27,7 @@ const PRODUCTS = [
     description: "Tas fashion minimalis yang cocok untuk outfit harian dan acara khusus.",
     price: 459000,
     category: "accessories",
-    image: svgImage("Classic Leather Bag", "#c7a26a", "#111116")
+    image: "img/4.avif"
   },
   {
     id: 4,
@@ -35,7 +35,7 @@ const PRODUCTS = [
     description: "Sweater hangat dengan tekstur lembut dan nuansa clean luxury.",
     price: 389000,
     category: "women",
-    image: svgImage("Premium Knit Sweater", "#e8d9c2", "#1b1b22")
+    image: "img/5.avif"
   },
   {
     id: 5,
@@ -43,7 +43,7 @@ const PRODUCTS = [
     description: "Sepatu kasual serbaguna dengan tampilan bersih dan nyaman dipakai.",
     price: 529000,
     category: "accessories",
-    image: svgImage("Minimal Sneaker", "#f5efe8", "#202028")
+    image: "img/6.avif"
   },
   {
     id: 6,
@@ -51,7 +51,7 @@ const PRODUCTS = [
     description: "Jaket statement dengan aksen mewah yang menonjolkan karakter fashion.",
     price: 899000,
     category: "men",
-    image: svgImage("Gold Accent Jacket", "#f1dfc4", "#2b2014")
+    image: "img/7.avif"
   }
 ];
 
@@ -83,27 +83,6 @@ const els = {
   commentRating: document.getElementById("commentRating"),
   homeCommentFeed: document.getElementById("homeCommentFeed")
 };
-
-function svgImage(title, bg, fg) {
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
-      <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="${bg}"/>
-          <stop offset="100%" stop-color="${fg}"/>
-        </linearGradient>
-      </defs>
-      <rect width="800" height="1000" rx="48" fill="url(#g)"/>
-      <circle cx="650" cy="120" r="90" fill="rgba(255,255,255,0.12)"/>
-      <circle cx="180" cy="860" r="170" fill="rgba(255,255,255,0.08)"/>
-      <text x="60" y="150" font-family="Arial" font-size="60" fill="#fff" font-weight="700">LuxeMode</text>
-      <text x="60" y="230" font-family="Arial" font-size="28" fill="#f6f1ea" opacity="0.92">Fashion collection</text>
-      <rect x="185" y="290" width="430" height="510" rx="180" fill="rgba(255,255,255,0.88)"/>
-      <path d="M300 350 C260 500, 250 630, 265 780 C270 840, 330 890, 400 900 C470 890, 530 840, 535 780 C550 630, 540 500, 500 350 Z" fill="#111116" opacity="0.22"/>
-      <text x="60" y="930" font-family="Arial" font-size="26" fill="#fff" opacity="0.75">${title}</text>
-    </svg>`;
-  return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
-}
 
 function rupiah(n) {
   return new Intl.NumberFormat("id-ID", {
@@ -196,7 +175,13 @@ function renderProducts(list, target = els.productGrid) {
 
   target.innerHTML = list.map(product => `
     <article class="product-card" data-name="${escapeHtml(product.name.toLowerCase())}">
-      <img class="product-image" src="${product.image}" alt="${escapeHtml(product.name)}">
+      <div class="image-wrapper">
+        <img class="product-image" src="${product.image}" alt="${escapeHtml(product.name)}">
+        <div class="image-overlay">
+          <span>${escapeHtml(product.name)}</span>
+        </div>
+      </div>
+      
       <div class="product-body">
         <h4>${escapeHtml(product.name)}</h4>
         <p>${escapeHtml(product.description)}</p>
