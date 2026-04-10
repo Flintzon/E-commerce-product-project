@@ -51,11 +51,13 @@
               <textarea id="commentText" placeholder="Tulis komentar Anda di sini..." required></textarea>
             </div>
 
-            <div class="form-group">
-              <label for="commentImage">Gambar (Opsional)</label>
-              <input type="file" id="commentImage" accept="image/*" />
-            </div>
-
+        <div class="form-group">
+  <label for="commentImage">Gambar (Opsional)</label>
+  <input type="file" id="commentImage" accept="image/*" multiple />
+  
+  <!-- PREVIEW GRID -->
+  <div id="imagePreview" class="image-preview-grid"></div>
+</div>
             <div class="form-group">
               <label>Rating</label>
               <div class="star-rating" id="starRating">
@@ -85,5 +87,21 @@
   </footer>
 
   <script src="script.js"></script>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "ISI",
+  authDomain: "ISI",
+  projectId: "ISI"
+};
+
+const app = initializeApp(firebaseConfig);
+
+window.db = getFirestore(app);
+window.auth = getAuth(app);
+</script>
 </body>
 </html>
