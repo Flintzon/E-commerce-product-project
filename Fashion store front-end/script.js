@@ -1,89 +1,102 @@
+/* ==========================================================
+   [1] KONSTANTA & DATA MASTER
+   Digunakan sebagai referensi data di seluruh aplikasi.
+   ========================================================== */
+
+// Kunci unik untuk penyimpanan LocalStorage agar tidak bentrok
 const STORAGE_KEYS = {
   likes: "lm_likes",
   cart: "lm_cart",
   comments: "lm_comments"
 };
 
+// Daftar produk statis yang akan ditampilkan di katalog
 const PRODUCTS = [
   {
     id: 1,
-    name: "Silk Evening Dress",
-    description: "Gaun satin mewah dengan siluet elegan untuk tampilan premium.",
+    name: "Luxury Powder Palette",
+    description: "Palet bedak wajah eksklusif dengan hasil akhir natural untuk riasan yang sempurna.",
     price: 749000,
-    category: "women",
+    category: "beauty",
     image: "img/2.avif"
   },
   {
     id: 2,
-    name: "Urban Tailored Set",
-    description: "Set modern dengan potongan rapi untuk gaya formal kasual.",
+    name: "Signature Artisan Perfume",
+    description: "Wewangian premium dengan aroma botani yang elegan dan tahan lama sepanjang hari.",
     price: 629000,
-    category: "men",
+    category: "fragrance",
     image: "img/3.avif"
   },
   {
     id: 3,
-    name: "Classic Leather Bag",
-    description: "Tas fashion minimalis yang cocok untuk outfit harian dan acara khusus.",
+    name: "Bioglow Skin Revitalize",
+    description: "Krim perawatan wajah yang diformulasikan untuk mencerahkan dan menghidrasi kulit secara maksimal.",
     price: 459000,
-    category: "accessories",
+    category: "skincare",
     image: "img/4.avif"
   },
   {
     id: 4,
-    name: "Premium Knit Sweater",
-    description: "Sweater hangat dengan tekstur lembut dan nuansa clean luxury.",
+    name: "Lumin Charcoal Cleanser Set",
+    description: "Rangkaian pembersih wajah pria dengan kandungan charcoal untuk kulit bersih dan segar.",
     price: 389000,
-    category: "women",
+    category: "grooming",
     image: "img/5.avif"
   },
   {
     id: 5,
-    name: "Minimal Sneaker",
-    description: "Sepatu kasual serbaguna dengan tampilan bersih dan nyaman dipakai.",
+    name: "Complete Botanical Skincare",
+    description: "Set lengkap perawatan kulit berbasis bahan alami untuk menutrisi kulit dari dalam.",
     price: 529000,
-    category: "accessories",
+    category: "skincare",
     image: "img/6.avif"
   },
   {
     id: 6,
-    name: "Gold Accent Jacket",
-    description: "Jaket statement dengan aksen mewah yang menonjolkan karakter fashion.",
+    name: "Curology Custom Formula",
+    description: "Serum perawatan wajah khusus yang dirancang untuk mengatasi masalah kulit secara spesifik.",
     price: 899000,
-    category: "men",
+    category: "skincare",
     image: "img/7.avif"
   }
 ];
 
+// Objek untuk menampung referensi elemen HTML (DOM) berdasarkan ID
 const els = {
-  productGrid: document.getElementById("productGrid"),
-  homeProductGrid: document.getElementById("homeProductGrid"),
-  cartList: document.getElementById("cartList"),
-  cartItems: document.getElementById("cartItems"),
-  cartPreview: document.getElementById("cartPreview"),
-  cartCount: document.getElementById("cartCount"),
-  summaryItems: document.getElementById("summaryItems"),
-  summaryTotal: document.getElementById("summaryTotal"),
-  subtotal: document.getElementById("subtotal"),
-  tax: document.getElementById("tax"),
-  total: document.getElementById("total"),
-  likeTotal: document.getElementById("likeTotal"),
-  searchInput: document.getElementById("searchInput"),
-  filterCategory: document.getElementById("filterCategory"),
-  clearCart: document.getElementById("clearCart"),
-  checkoutBtn: document.getElementById("checkoutBtn"),
-  commentText: document.getElementById("commentText"),
-  commentImage: document.getElementById("commentImage"),
-  postComment: document.getElementById("postComment"),
-  commentFeed: document.getElementById("commentFeed"),
-  commentList: document.getElementById("commentList"),
-  commentForm: document.getElementById("commentForm"),
-  userName: document.getElementById("userName"),
-  starRating: document.getElementById("starRating"),
-  commentRating: document.getElementById("commentRating"),
-  homeCommentFeed: document.getElementById("homeCommentFeed")
+  productGrid: document.getElementById("productGrid"), // Grid utama produk
+  homeProductGrid: document.getElementById("homeProductGrid"), // Grid produk di beranda
+  cartList: document.getElementById("cartList"), // Daftar belanja di sidebar/modal
+  cartItems: document.getElementById("cartItems"), // Daftar belanja di halaman keranjang
+  cartPreview: document.getElementById("cartPreview"), // Ringkasan kecil keranjang
+  cartCount: document.getElementById("cartCount"), // Badge jumlah item di navbar
+  summaryItems: document.getElementById("summaryItems"), // Total qty di ringkasan
+  summaryTotal: document.getElementById("summaryTotal"), // Total harga di ringkasan
+  subtotal: document.getElementById("subtotal"), // Harga sebelum pajak
+  tax: document.getElementById("tax"), // Nilai pajak
+  total: document.getElementById("total"), // Harga akhir (Grand total)
+  likeTotal: document.getElementById("likeTotal"), // Total semua like di statistik
+  searchInput: document.getElementById("searchInput"), // Input cari produk
+  filterCategory: document.getElementById("filterCategory"), // Dropdown kategori
+  clearCart: document.getElementById("clearCart"), // Tombol hapus semua keranjang
+  checkoutBtn: document.getElementById("checkoutBtn"), // Tombol proses bayar
+  commentText: document.getElementById("commentText"), // Area ketik komentar
+  commentImage: document.getElementById("commentImage"), // Input upload foto komentar
+  postComment: document.getElementById("postComment"), // Tombol kirim komentar cepat
+  commentFeed: document.getElementById("commentFeed"), // Wadah daftar komentar
+  commentList: document.getElementById("commentList"), // Wadah komentar di halaman khusus
+  commentForm: document.getElementById("commentForm"), // Form lengkap komentar
+  userName: document.getElementById("userName"), // Input nama pemberi komentar
+  starRating: document.getElementById("starRating"), // Wadah bintang rating
+  commentRating: document.getElementById("commentRating"), // Input nilai angka rating (hidden)
+  homeCommentFeed: document.getElementById("homeCommentFeed") // Wadah komentar di beranda
 };
 
+/* ==========================================================
+   [2] FUNGSI FORMATTER & KEAMANAN
+   ========================================================== */
+
+// Mengubah angka menjadi format mata uang Rupiah
 function rupiah(n) {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -92,6 +105,7 @@ function rupiah(n) {
   }).format(n);
 }
 
+// Membersihkan teks dari karakter HTML agar tidak terkena serangan XSS
 function escapeHtml(text = "") {
   return String(text).replace(/[&<>"']/g, c => ({
     "&": "&amp;",
@@ -102,6 +116,12 @@ function escapeHtml(text = "") {
   }[c]));
 }
 
+/* ==========================================================
+   [3] FUNGSI AKSES LOCAL STORAGE
+   Menghubungkan data JavaScript dengan penyimpanan permanen browser.
+   ========================================================== */
+
+// Mengambil data Like dari storage (return objek kosong jika tidak ada)
 function getLikes() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEYS.likes)) || {};
@@ -110,10 +130,12 @@ function getLikes() {
   }
 }
 
+// Menyimpan perubahan data Like ke storage
 function setLikes(likes) {
   localStorage.setItem(STORAGE_KEYS.likes, JSON.stringify(likes));
 }
 
+// Mengambil data Keranjang dari storage
 function getCart() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEYS.cart)) || {};
@@ -122,10 +144,12 @@ function getCart() {
   }
 }
 
+// Menyimpan perubahan data Keranjang ke storage
 function setCart(cart) {
   localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(cart));
 }
 
+// Mengambil komentar (memberikan 1 komentar awal jika storage masih kosong)
 function getComments() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEYS.comments)) || [
@@ -142,14 +166,21 @@ function getComments() {
   }
 }
 
+// Menyimpan daftar komentar terbaru ke storage
 function setComments(comments) {
   localStorage.setItem(STORAGE_KEYS.comments, JSON.stringify(comments));
 }
 
+/* ==========================================================
+   [4] LOGIKA DATA & FILTER PRODUK
+   ========================================================== */
+
+// Mencari satu objek produk berdasarkan ID
 function getProductById(id) {
   return PRODUCTS.find(p => p.id === id);
 }
 
+// Menghasilkan daftar produk yang sudah dibubuhi status 'liked' (true/false)
 function getProductStateList() {
   const likes = getLikes();
   return PRODUCTS.map(p => ({
@@ -158,6 +189,7 @@ function getProductStateList() {
   }));
 }
 
+// Menyaring produk berdasarkan kata kunci pencarian dan kategori yang dipilih
 function filteredProducts() {
   const q = (els.searchInput?.value || "").trim().toLowerCase();
   const category = els.filterCategory?.value || "";
@@ -170,8 +202,13 @@ function filteredProducts() {
   });
 }
 
+/* ==========================================================
+   [5] FUNGSI RENDER (MENAMPILKAN KE LAYAR)
+   ========================================================== */
+
+// Menampilkan kartu produk ke dalam grid HTML yang ditentukan
 function renderProducts(list, target = els.productGrid) {
-  if (!target) return;
+  if (!target) return; // Jika elemen target tidak ada di halaman ini, batalkan
 
   target.innerHTML = list.map(product => `
     <article class="product-card" data-name="${escapeHtml(product.name.toLowerCase())}">
@@ -200,10 +237,12 @@ function renderProducts(list, target = els.productGrid) {
   `).join("");
 }
 
+// Mengelola tampilan keranjang belanja dan kalkulasi total harga
 function renderCart() {
   const cart = getCart();
   const entries = Object.values(cart);
 
+  // Render list untuk sidebar/modal keranjang jika ada
   if (els.cartList) {
     if (!entries.length) {
       els.cartList.innerHTML = '<p class="empty-state">Keranjang Anda kosong. Silakan tambahkan produk.</p>';
@@ -225,6 +264,7 @@ function renderCart() {
     }
   }
 
+  // Render list untuk halaman utama keranjang jika ada
   if (els.cartItems) {
     if (!entries.length) {
       els.cartItems.innerHTML = '<p class="empty-state">Keranjang Anda kosong. <a href="produk.html">Mulai belanja sekarang</a></p>';
@@ -246,20 +286,23 @@ function renderCart() {
     }
   }
 
+  // Menghitung angka-angka untuk ringkasan belanja
   const itemCount = entries.reduce((sum, item) => sum + item.qty, 0);
   const subtotal = entries.reduce((sum, item) => sum + item.qty * item.price, 0);
-  const taxValue = Math.round(subtotal * 0.1);
+  const taxValue = Math.round(subtotal * 0.1); // Pajak 10%
   const total = subtotal + taxValue;
 
+  // Memperbarui teks pada elemen-elemen ringkasan
   if (els.cartCount) els.cartCount.textContent = itemCount;
   if (els.summaryItems) els.summaryItems.textContent = itemCount;
   if (els.summaryTotal) els.summaryTotal.textContent = rupiah(total);
   if (els.subtotal) els.subtotal.textContent = rupiah(subtotal);
   if (els.tax) els.tax.textContent = rupiah(taxValue);
   if (els.total) els.total.textContent = rupiah(total);
-  if (els.checkoutBtn) els.checkoutBtn.disabled = itemCount === 0;
+  if (els.checkoutBtn) els.checkoutBtn.disabled = itemCount === 0; // Matikan tombol jika kosong
 }
 
+// Memperbarui tampilan tombol like dan angka statistik like di layar
 function renderLikes() {
   const likes = getLikes();
   const likedCount = Object.values(likes).filter(Boolean).length;
@@ -279,6 +322,7 @@ function renderLikes() {
   });
 }
 
+// Menampilkan daftar komentar dari komunitas
 function renderComments(target = els.commentFeed) {
   if (!target) return;
 
@@ -294,13 +338,14 @@ function renderComments(target = els.commentFeed) {
   `).join("");
 }
 
+// Fungsi render khusus untuk halaman Beranda (Index)
 function renderHome() {
   if (els.homeProductGrid) {
-    renderProducts(getProductStateList().slice(0, 3), els.homeProductGrid);
+    renderProducts(getProductStateList().slice(0, 3), els.homeProductGrid); // Hanya tampilkan 3 produk
   }
 
   if (els.cartPreview) {
-    const cart = Object.values(getCart()).slice(0, 2);
+    const cart = Object.values(getCart()).slice(0, 2); // Hanya tampilkan 2 item keranjang
     if (!cart.length) {
       els.cartPreview.innerHTML = '<p class="empty-state">Keranjang kosong. Mulai belanja sekarang!</p>';
     } else {
@@ -317,7 +362,7 @@ function renderHome() {
   }
 
   if (els.homeCommentFeed) {
-    const comments = getComments().slice(0, 3);
+    const comments = getComments().slice(0, 3); // Hanya tampilkan 3 komentar terbaru
     els.homeCommentFeed.innerHTML = comments.map(comment => `
       <div class="comment-item">
         <h4>${escapeHtml(comment.name || "Anonim")}</h4>
@@ -328,6 +373,7 @@ function renderHome() {
   }
 }
 
+// Menjalankan penyegaran tampilan untuk semua komponen
 function refreshAll() {
   renderLikes();
   renderCart();
@@ -335,23 +381,29 @@ function refreshAll() {
   renderHome();
 }
 
+/* ==========================================================
+   [6] AKSI GLOBAL (DAPAT DIPANGGIL DARI HTML)
+   ========================================================== */
+
+// Menangani klik tombol Like
 window.toggleLike = function(id) {
   const likes = getLikes();
-  likes[id] = !likes[id];
+  likes[id] = !likes[id]; // Balikkan status like
   setLikes(likes);
   renderLikes();
   renderHome();
 };
 
+// Menangani klik tombol tambah ke keranjang
 window.addToCart = function(id) {
   const product = getProductById(id);
   if (!product) return;
 
   const cart = getCart();
   if (!cart[id]) {
-    cart[id] = { ...product, qty: 1 };
+    cart[id] = { ...product, qty: 1 }; // Tambah item baru
   } else {
-    cart[id].qty += 1;
+    cart[id].qty += 1; // Tambah jumlah jika sudah ada
   }
 
   setCart(cart);
@@ -359,13 +411,14 @@ window.addToCart = function(id) {
   renderHome();
 };
 
+// Mengubah kuantitas item di dalam keranjang
 window.changeQty = function(id, delta) {
   const cart = getCart();
   if (!cart[id]) return;
 
   cart[id].qty += delta;
   if (cart[id].qty <= 0) {
-    delete cart[id];
+    delete cart[id]; // Hapus item jika qty jadi 0 atau kurang
   }
 
   setCart(cart);
@@ -373,6 +426,11 @@ window.changeQty = function(id, delta) {
   renderHome();
 };
 
+/* ==========================================================
+   [7] PEMROSESAN MEDIA (GAMBAR)
+   ========================================================== */
+
+// Mengonversi file gambar dari input menjadi string teks (Data URL) agar bisa disimpan di storage
 function readFileAsDataURL(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -382,6 +440,11 @@ function readFileAsDataURL(file) {
   });
 }
 
+/* ==========================================================
+   [8] EVENT LISTENERS (PENANGAN KEJADIAN)
+   ========================================================== */
+
+// Deteksi saat user mengetik di kolom pencarian
 if (els.searchInput) {
   els.searchInput.addEventListener("input", () => {
     renderProducts(filteredProducts());
@@ -389,6 +452,7 @@ if (els.searchInput) {
   });
 }
 
+// Deteksi saat user mengubah kategori produk
 if (els.filterCategory) {
   els.filterCategory.addEventListener("change", () => {
     renderProducts(filteredProducts());
@@ -396,53 +460,57 @@ if (els.filterCategory) {
   });
 }
 
+// Deteksi klik tombol kosongkan keranjang
 if (els.clearCart) {
   els.clearCart.addEventListener("click", () => {
-    setCart({});
+    setCart({}); // Set storage jadi objek kosong
     renderCart();
     renderHome();
   });
 }
 
+// Deteksi klik tombol checkout
 if (els.checkoutBtn) {
   els.checkoutBtn.addEventListener("click", () => {
     alert("Demo front-end: checkout belum dihubungkan ke backend.");
   });
 }
 
+// Logika interaksi rating bintang (klik bintang untuk memberi nilai)
 if (els.starRating && els.commentRating) {
   const stars = [...els.starRating.querySelectorAll(".star")];
 
   const updateStars = (value) => {
     stars.forEach(star => {
       const starValue = Number(star.dataset.value);
-      star.classList.toggle("active", starValue <= value);
+      star.classList.toggle("active", starValue <= value); // Aktifkan bintang jika nilai <= yang dipilih
     });
   };
 
   stars.forEach(star => {
     star.addEventListener("click", () => {
       const value = Number(star.dataset.value);
-      els.commentRating.value = String(value);
+      els.commentRating.value = String(value); // Simpan nilai ke hidden input
       updateStars(value);
     });
   });
 }
 
+// Menangani pengiriman form komentar lengkap
 if (els.commentForm) {
   els.commentForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Jangan refresh halaman
 
     const name = (els.userName?.value || "").trim();
     const text = (els.commentText?.value || "").trim();
     const rating = Number(els.commentRating?.value || 0);
     const file = els.commentImage?.files?.[0] || null;
 
-    if (!name || !text) return;
+    if (!name || !text) return; // Validasi minimal
 
     let imageData = null;
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
+      if (file.size > 2 * 1024 * 1024) { // Batas 2MB agar storage tidak penuh
         alert("Ukuran gambar maksimal 2MB.");
         return;
       }
@@ -450,7 +518,7 @@ if (els.commentForm) {
     }
 
     const comments = getComments();
-    comments.unshift({
+    comments.unshift({ // Tambah ke awal daftar agar muncul paling atas
       name,
       text,
       rating,
@@ -459,6 +527,7 @@ if (els.commentForm) {
     });
     setComments(comments);
 
+    // Reset form setelah sukses
     els.commentForm.reset();
     if (els.commentRating) els.commentRating.value = "0";
     if (els.starRating) {
@@ -470,6 +539,7 @@ if (els.commentForm) {
   });
 }
 
+// Menangani posting komentar cepat (hanya teks/gambar tanpa nama penuh)
 if (els.postComment) {
   els.postComment.addEventListener("click", async () => {
     const text = (els.commentText?.value || "").trim();
@@ -504,7 +574,11 @@ if (els.postComment) {
   });
 }
 
+/* ==========================================================
+   [9] INISIALISASI AWAL
+   Berjalan otomatis saat halaman selesai dimuat.
+   ========================================================== */
 document.addEventListener("DOMContentLoaded", () => {
-  renderProducts(filteredProducts());
-  refreshAll();
+  renderProducts(filteredProducts()); // Tampilkan produk awal
+  refreshAll(); // Sinkronkan semua data UI
 });
