@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Komentar — LuxeMode</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html">
+        <img class="brand-mark" src="img/logo-removebg-preview.avif" alt="LuxeBeauty Logo">
+      </a>
+      <div>
+        <h1>LuxeBeauty</h1>
+        <p>Luxury Fashion store</p>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="index.html">Beranda</a>
+      <a href="produk.html">Produk</a>
+      <a href="keranjang.html">Keranjang</a>
+      <a href="komentar.html" class="active">Komentar</a>
+    </nav>
+
+    <button class="cart-pill" type="button">
+      <a href="keranjang.html">🛍️ <span id="cartCount">0</span></a>
+    </button>
+  </header>
+
+  <main>
+    <section class="page-header">
+      <h1>Komunitas LuxeBeauty</h1>
+      <p>Bagikan pengalaman dan komentar Anda</p>
+    </section>
+
+    <section class="section">
+      <div class="comment-container">
+        <div class="comment-form">
+          <h2>Tulis Komentar</h2>
+          <form id="commentForm">
+            <div class="form-group">
+              <label for="userName">Nama</label>
+              <input type="text" id="userName" placeholder="Nama Anda" required />
+            </div>
+
+            <div class="form-group">
+              <label for="commentText">Komentar</label>
+              <textarea id="commentText" placeholder="Tulis komentar Anda di sini..." required></textarea>
+            </div>
+
+        <div class="form-group">
+  <label for="commentImage">Gambar (Opsional)</label>
+  <input type="file" id="commentImage" accept="image/*" multiple />
+  
+  <!-- PREVIEW GRID -->
+  <div id="imagePreview" class="image-preview-grid"></div>
+</div>
+            <div class="form-group">
+              <label>Rating</label>
+              <div class="star-rating" id="starRating">
+                <span class="star" data-value="1">⭐</span>
+                <span class="star" data-value="2">⭐</span>
+                <span class="star" data-value="3">⭐</span>
+                <span class="star" data-value="4">⭐</span>
+                <span class="star" data-value="5">⭐</span>
+              </div>
+              <input type="hidden" id="commentRating" value="0" />
+            </div>
+
+            <button type="submit" class="btn primary">Kirim Komentar</button>
+          </form>
+        </div>
+
+        <div class="comment-feed">
+          <h2>Komentar Terbaru</h2>
+          <div id="commentList"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 LuxeBeauty. Luxury Fashion e-commerce.</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "ISI",
+  authDomain: "ISI",
+  projectId: "ISI"
+};
+
+const app = initializeApp(firebaseConfig);
+
+window.db = getFirestore(app);
+window.auth = getAuth(app);
+</script>
+</body>
+</html>
