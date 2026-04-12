@@ -3,8 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Komentar — LuxeMode</title>
+    <title>LuxeMode — Fashion E-Commerce</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/avif" href="img/logo-removebg-preview.avif">
+
   </head>
   <body>
     <header class="topbar">
@@ -51,6 +53,9 @@
                   type="text"
                   id="userName"
                   placeholder="Nama Anda"
+                  oninvalid="this.setCustomValidity('Mohon isi nama Anda sebelum mengirim!')"
+                  oninput="this.setCustomValidity('')"
+                  autocomplete="off"
                   required
                 />
               </div>
@@ -60,6 +65,9 @@
                 <textarea
                   id="commentText"
                   placeholder="Tulis komentar Anda di sini..."
+                  oninvalid="this.setCustomValidity('Mohon isi komentar Anda sebelum mengirim!')"
+                  oninput="this.setCustomValidity('')"
+                  autocomplete="off"
                   required
                 ></textarea>
               </div>
@@ -85,16 +93,16 @@
                   <span class="star" data-value="4">⭐</span>
                   <span class="star" data-value="5">⭐</span>
                 </div>
-                <input type="hidden" id="commentRating" value="0" />
+                <input type="hidden" id="commentRating" value="5" />
               </div>
 
               <button type="submit" class="btn primary">Kirim Komentar</button>
             </form>
-          </div>
 
-          <div class="comment-feed">
-            <h2>Komentar Terbaru</h2>
-            <div id="commentList"></div>
+            <div class="comment-feed">
+              <h2>Komentar Terbaru</h2>
+              <div id="commentList"></div>
+            </div>
           </div>
         </div>
       </section>

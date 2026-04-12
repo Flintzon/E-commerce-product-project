@@ -318,11 +318,15 @@ main {
    ========================================================== */
 .cart-layout {
   display: grid;
-  grid-template-columns: 1.6fr 0.8fr;
+  grid-template-columns: 1fr;
   gap: 18px;
 }
 
 .cart-list, .cart-summary, .cart-preview, .summary-box { padding: 18px; }
+
+.cart-summary.hidden {
+  display: none;
+}
 
 .cart-item {
   display: grid;
@@ -345,7 +349,6 @@ main {
    ========================================================== */
 .comment-container {
   display: grid;
-  grid-template-columns: 1.6fr 0.8fr;
   gap: 18px;
 }
 
@@ -361,6 +364,47 @@ main {
 
 .comment-item { padding: 18px; display: grid; gap: 12px; margin-bottom: 14px; }
 .comment-item img { max-width: 240px; border-radius: 16px; border: 1px solid var(--line); }
+
+.comment-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.comment-images img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+}
+.more-comments {
+  text-align: center;
+  padding-top: 16px;
+}
+
+.more-comments .btn-lanjut,
+.more-comments button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(199, 162, 106, 0.12);
+  color: var(--text);
+  padding: 14px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.2s ease, background 0.3s ease, border-color 0.3s ease;
+}
+
+.more-comments .btn-lanjut:hover,
+.more-comments button:hover {
+  transform: translateY(-1px);
+  background: rgba(199, 162, 106, 0.22);
+  border-color: rgba(199, 162, 106, 0.35);
+}
 
 /* ==========================================================
    [7] FOOTER & MEDIA QUERIES

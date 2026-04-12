@@ -7,50 +7,50 @@ const STORAGE_KEYS = {
 const PRODUCTS = [
   {
     id: 1,
-    name: "Silk Evening Dress",
-    description: "Gaun satin mewah dengan siluet elegan untuk tampilan premium.",
+    name: "Luxury Powder Palette",
+    description: "Palet bedak wajah eksklusif dengan hasil akhir natural untuk riasan yang sempurna.",
     price: 749000,
-    category: "women",
+    category: "beauty",
     image: "img/2.avif"
   },
   {
     id: 2,
-    name: "Urban Tailored Set",
-    description: "Set modern dengan potongan rapi untuk gaya formal kasual.",
+    name: "Signature Artisan Perfume",
+    description: "Wewangian premium dengan aroma botani yang elegan dan tahan lama sepanjang hari.",
     price: 629000,
-    category: "men",
+    category: "fragrance",
     image: "img/3.avif"
   },
   {
     id: 3,
-    name: "Classic Leather Bag",
-    description: "Tas fashion minimalis yang cocok untuk outfit harian dan acara khusus.",
+    name: "Bioglow Skin Revitalize",
+    description: "Krim perawatan wajah yang diformulasikan untuk mencerahkan dan menghidrasi kulit secara maksimal.",
     price: 459000,
-    category: "accessories",
+    category: "skincare",
     image: "img/4.avif"
   },
   {
     id: 4,
-    name: "Premium Knit Sweater",
-    description: "Sweater hangat dengan tekstur lembut dan nuansa clean luxury.",
+    name: "Lumin Charcoal Cleanser Set",
+    description: "Rangkaian pembersih wajah pria dengan kandungan charcoal untuk kulit bersih dan segar.",
     price: 389000,
-    category: "women",
+    category: "grooming",
     image: "img/5.avif"
   },
   {
     id: 5,
-    name: "Minimal Sneaker",
-    description: "Sepatu kasual serbaguna dengan tampilan bersih dan nyaman dipakai.",
+    name: "Complete Botanical Skincare",
+    description: "Set lengkap perawatan kulit berbasis bahan alami untuk menutrisi kulit dari dalam.",
     price: 529000,
-    category: "accessories",
+    category: "skincare",
     image: "img/6.avif"
   },
   {
     id: 6,
-    name: "Gold Accent Jacket",
-    description: "Jaket statement dengan aksen mewah yang menonjolkan karakter fashion.",
+    name: "Curology Custom Formula",
+    description: "Serum perawatan wajah khusus yang dirancang untuk mengatasi masalah kulit secara spesifik.",
     price: 899000,
-    category: "men",
+    category: "skincare",
     image: "img/7.avif"
   }
 ];
@@ -61,6 +61,7 @@ const els = {
   cartList: document.getElementById("cartList"),
   cartItems: document.getElementById("cartItems"),
   cartPreview: document.getElementById("cartPreview"),
+  cartSummary: document.querySelector(".cart-summary"),
   cartCount: document.getElementById("cartCount"),
   summaryItems: document.getElementById("summaryItems"),
   summaryTotal: document.getElementById("summaryTotal"),
@@ -129,7 +130,17 @@ function setCart(cart) {
 
 function getComments() {
   const stored = safeParse(STORAGE_KEYS.comments, null);
-  if (Array.isArray(stored) && stored.length) return stored;
+  if (Array.isArray(stored) && stored.length) {
+    return stored.map((comment) => ({
+      ...comment,
+      rating: Number(comment.rating ?? 0),
+      images: Array.isArray(comment.images)
+        ? comment.images
+        : comment.image
+        ? [comment.image]
+        : []
+    }));
+  }
 
   return [
     {
@@ -232,6 +243,10 @@ function renderCart() {
   renderList(els.cartList);
   renderList(els.cartItems);
 
+  if (els.cartSummary) {
+    els.cartSummary.classList.toggle("hidden", entries.length === 0);
+  }
+
   const itemCount = entries.reduce((sum, item) => sum + item.qty, 0);
   const subtotal = entries.reduce((sum, item) => sum + item.qty * item.price, 0);
   const taxValue = Math.round(subtotal * 0.1);
@@ -281,20 +296,50 @@ function renderCommentImages(comment) {
   `;
 }
 
-function renderComments(target = els.commentFeed) {
+function renderComments(target = els.commentFeed, showAll = false) {
   if (!target) return;
 
-  const comments = getComments();
+  const allComments = getComments();
+  const limit = 5;
+  
+  const visibleComments = showAll ? allComments : allComments.slice(0, limit);
+  const hasMore = !showAll && allComments.length > limit;
 
-  target.innerHTML = comments.map((comment) => `
-    <div class="comment-item">
-      <h4>${escapeHtml(comment.name || "Anonim")}</h4>
-      <div>${"⭐".repeat(Math.max(0, Math.min(5, Number(comment.rating || 0))))}</div>
-      ${renderCommentImages(comment)}
-      <p>${escapeHtml(comment.text || "")}</p>
-    </div>
-  `).join("");
-}
+  let html = visibleComments
+    .map((comment) => {
+      const rating = Math.max(0, Math.min(5, Number(comment.rating || 0)));
+      return `
+        <div class="comment-item">
+          <h4>${escapeHtml(comment.name || "Anonim")}</h4>
+          <div>${"⭐".repeat(rating)}</div>
+          ${renderCommentImages(comment)}
+          <p>${escapeHtml(comment.text || "")}</p>
+        </div>
+      `;
+    })
+    .join("");
+
+  if (hasMore) {
+    html += `
+      <div class="more-comments">
+        <button id="btnLanjut" class="btn-lanjut">
+          Lihat ${allComments.length - limit} komentar lainnya...
+        </button>
+      </div>
+    `;
+  }
+
+  target.innerHTML = html;
+
+  const btn = document.getElementById('btnLanjut');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      renderComments(target, true);
+    });
+  }
+
+};
+
 
 function renderHome() {
   if (els.homeProductGrid) {
@@ -320,14 +365,19 @@ function renderHome() {
 
   if (els.homeCommentFeed) {
     const comments = getComments().slice(0, 3);
-    els.homeCommentFeed.innerHTML = comments.map((comment) => `
-      <div class="comment-item">
-        <h4>${escapeHtml(comment.name || "Anonim")}</h4>
-        <div>${"⭐".repeat(Math.max(0, Math.min(5, Number(comment.rating || 0))))}</div>
-        ${renderCommentImages(comment)}
-        <p>${escapeHtml(comment.text || "")}</p>
-      </div>
-    `).join("");
+    els.homeCommentFeed.innerHTML = comments
+      .map((comment) => {
+        const rating = Math.max(0, Math.min(5, Number(comment.rating || 0)));
+        return `
+          <div class="comment-item">
+            <h4>${escapeHtml(comment.name || "Anonim")}</h4>
+            <div>${"⭐".repeat(rating)}</div>
+            ${renderCommentImages(comment)}
+            <p>${escapeHtml(comment.text || "")}</p>
+          </div>
+        `;
+      })
+      .join("");
   }
 }
 
@@ -647,8 +697,8 @@ if (els.commentImage && els.imagePreview) {
 
 function clearCommentForm() {
   if (els.commentForm) els.commentForm.reset();
-  if (els.commentRating) els.commentRating.value = "0";
-  updateStarUI(0);
+  if (els.commentRating) els.commentRating.value = "5";
+  updateStarUI(5);
   if (uploader) uploader.reset();
 }
 
@@ -727,7 +777,11 @@ function init() {
   refreshAll();
 
   if (els.commentRating) {
-    updateStarUI(Number(els.commentRating.value || 0));
+    const initialRating = Number(els.commentRating.value || 5);
+    if (!initialRating) {
+      els.commentRating.value = "5";
+    }
+    updateStarUI(initialRating || 5);
   }
 }
 
