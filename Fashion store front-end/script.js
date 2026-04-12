@@ -1,113 +1,99 @@
-/* ==========================================================
-   [1] KONSTANTA & DATA MASTER
-   Digunakan sebagai referensi data di seluruh aplikasi.
-   ========================================================== */
-
-// Kunci unik untuk penyimpanan LocalStorage agar tidak bentrok
 const STORAGE_KEYS = {
   likes: "lm_likes",
   cart: "lm_cart",
   comments: "lm_comments"
 };
 
-// Daftar produk statis yang akan ditampilkan di katalog
 const PRODUCTS = [
   {
     id: 1,
-    name: "Luxury Powder Palette",
-    description: "Palet bedak wajah eksklusif dengan hasil akhir natural untuk riasan yang sempurna.",
+    name: "Silk Evening Dress",
+    description: "Gaun satin mewah dengan siluet elegan untuk tampilan premium.",
     price: 749000,
-    category: "beauty",
+    category: "women",
     image: "img/2.avif"
   },
   {
     id: 2,
-    name: "Signature Artisan Perfume",
-    description: "Wewangian premium dengan aroma botani yang elegan dan tahan lama sepanjang hari.",
+    name: "Urban Tailored Set",
+    description: "Set modern dengan potongan rapi untuk gaya formal kasual.",
     price: 629000,
-    category: "fragrance",
+    category: "men",
     image: "img/3.avif"
   },
   {
     id: 3,
-    name: "Bioglow Skin Revitalize",
-    description: "Krim perawatan wajah yang diformulasikan untuk mencerahkan dan menghidrasi kulit secara maksimal.",
+    name: "Classic Leather Bag",
+    description: "Tas fashion minimalis yang cocok untuk outfit harian dan acara khusus.",
     price: 459000,
-    category: "skincare",
+    category: "accessories",
     image: "img/4.avif"
   },
   {
     id: 4,
-    name: "Lumin Charcoal Cleanser Set",
-    description: "Rangkaian pembersih wajah pria dengan kandungan charcoal untuk kulit bersih dan segar.",
+    name: "Premium Knit Sweater",
+    description: "Sweater hangat dengan tekstur lembut dan nuansa clean luxury.",
     price: 389000,
-    category: "grooming",
+    category: "women",
     image: "img/5.avif"
   },
   {
     id: 5,
-    name: "Complete Botanical Skincare",
-    description: "Set lengkap perawatan kulit berbasis bahan alami untuk menutrisi kulit dari dalam.",
+    name: "Minimal Sneaker",
+    description: "Sepatu kasual serbaguna dengan tampilan bersih dan nyaman dipakai.",
     price: 529000,
-    category: "skincare",
+    category: "accessories",
     image: "img/6.avif"
   },
   {
     id: 6,
-    name: "Curology Custom Formula",
-    description: "Serum perawatan wajah khusus yang dirancang untuk mengatasi masalah kulit secara spesifik.",
+    name: "Gold Accent Jacket",
+    description: "Jaket statement dengan aksen mewah yang menonjolkan karakter fashion.",
     price: 899000,
-    category: "skincare",
+    category: "men",
     image: "img/7.avif"
   }
 ];
 
-// Objek untuk menampung referensi elemen HTML (DOM) berdasarkan ID
 const els = {
-  productGrid: document.getElementById("productGrid"), // Grid utama produk
-  homeProductGrid: document.getElementById("homeProductGrid"), // Grid produk di beranda
-  cartList: document.getElementById("cartList"), // Daftar belanja di sidebar/modal
-  cartItems: document.getElementById("cartItems"), // Daftar belanja di halaman keranjang
-  cartPreview: document.getElementById("cartPreview"), // Ringkasan kecil keranjang
-  cartCount: document.getElementById("cartCount"), // Badge jumlah item di navbar
-  summaryItems: document.getElementById("summaryItems"), // Total qty di ringkasan
-  summaryTotal: document.getElementById("summaryTotal"), // Total harga di ringkasan
-  subtotal: document.getElementById("subtotal"), // Harga sebelum pajak
-  tax: document.getElementById("tax"), // Nilai pajak
-  total: document.getElementById("total"), // Harga akhir (Grand total)
-  likeTotal: document.getElementById("likeTotal"), // Total semua like di statistik
-  searchInput: document.getElementById("searchInput"), // Input cari produk
-  filterCategory: document.getElementById("filterCategory"), // Dropdown kategori
-  clearCart: document.getElementById("clearCart"), // Tombol hapus semua keranjang
-  checkoutBtn: document.getElementById("checkoutBtn"), // Tombol proses bayar
-  commentText: document.getElementById("commentText"), // Area ketik komentar
-  commentImage: document.getElementById("commentImage"), // Input upload foto komentar
-  postComment: document.getElementById("postComment"), // Tombol kirim komentar cepat
-  commentFeed: document.getElementById("commentFeed"), // Wadah daftar komentar
-  commentList: document.getElementById("commentList"), // Wadah komentar di halaman khusus
-  commentForm: document.getElementById("commentForm"), // Form lengkap komentar
-  userName: document.getElementById("userName"), // Input nama pemberi komentar
-  starRating: document.getElementById("starRating"), // Wadah bintang rating
-  commentRating: document.getElementById("commentRating"), // Input nilai angka rating (hidden)
-  homeCommentFeed: document.getElementById("homeCommentFeed") // Wadah komentar di beranda
+  productGrid: document.getElementById("productGrid"),
+  homeProductGrid: document.getElementById("homeProductGrid"),
+  cartList: document.getElementById("cartList"),
+  cartItems: document.getElementById("cartItems"),
+  cartPreview: document.getElementById("cartPreview"),
+  cartCount: document.getElementById("cartCount"),
+  summaryItems: document.getElementById("summaryItems"),
+  summaryTotal: document.getElementById("summaryTotal"),
+  subtotal: document.getElementById("subtotal"),
+  tax: document.getElementById("tax"),
+  total: document.getElementById("total"),
+  likeTotal: document.getElementById("likeTotal"),
+  searchInput: document.getElementById("searchInput"),
+  filterCategory: document.getElementById("filterCategory"),
+  clearCart: document.getElementById("clearCart"),
+  checkoutBtn: document.getElementById("checkoutBtn"),
+  commentText: document.getElementById("commentText"),
+  commentImage: document.getElementById("commentImage"),
+  imagePreview: document.getElementById("imagePreview"),
+  commentFeed: document.getElementById("commentList") || document.getElementById("commentFeed"),
+  commentList: document.getElementById("commentList"),
+  commentForm: document.getElementById("commentForm"),
+  userName: document.getElementById("userName"),
+  starRating: document.getElementById("starRating"),
+  commentRating: document.getElementById("commentRating"),
+  homeCommentFeed: document.getElementById("homeCommentFeed")
 };
 
-/* ==========================================================
-   [2] FUNGSI FORMATTER & KEAMANAN
-   ========================================================== */
-
-// Mengubah angka menjadi format mata uang Rupiah
 function rupiah(n) {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0
-  }).format(n);
+  }).format(Number(n || 0));
 }
 
-// Membersihkan teks dari karakter HTML agar tidak terkena serangan XSS
 function escapeHtml(text = "") {
-  return String(text).replace(/[&<>"']/g, c => ({
+  return String(text).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
@@ -116,84 +102,67 @@ function escapeHtml(text = "") {
   }[c]));
 }
 
-/* ==========================================================
-   [3] FUNGSI AKSES LOCAL STORAGE
-   Menghubungkan data JavaScript dengan penyimpanan permanen browser.
-   ========================================================== */
-
-// Mengambil data Like dari storage (return objek kosong jika tidak ada)
-function getLikes() {
+function safeParse(key, fallback) {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.likes)) || {};
+    const value = JSON.parse(localStorage.getItem(key));
+    return value ?? fallback;
   } catch {
-    return {};
+    return fallback;
   }
 }
 
-// Menyimpan perubahan data Like ke storage
+function getLikes() {
+  return safeParse(STORAGE_KEYS.likes, {});
+}
+
 function setLikes(likes) {
   localStorage.setItem(STORAGE_KEYS.likes, JSON.stringify(likes));
 }
 
-// Mengambil data Keranjang dari storage
 function getCart() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.cart)) || {};
-  } catch {
-    return {};
-  }
+  return safeParse(STORAGE_KEYS.cart, {});
 }
 
-// Menyimpan perubahan data Keranjang ke storage
 function setCart(cart) {
   localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(cart));
 }
 
-// Mengambil komentar (memberikan 1 komentar awal jika storage masih kosong)
 function getComments() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.comments)) || [
-      {
-        name: "Alya",
-        text: "Desainnya terlihat premium dan cocok untuk katalog fashion modern.",
-        rating: 5,
-        image: null,
-        date: new Date().toISOString()
-      }
-    ];
-  } catch {
-    return [];
-  }
+  const stored = safeParse(STORAGE_KEYS.comments, null);
+  if (Array.isArray(stored) && stored.length) return stored;
+
+  return [
+    {
+      name: "Alya",
+      text: "Desainnya terlihat premium dan cocok untuk katalog fashion modern.",
+      rating: 5,
+      images: [],
+      date: new Date().toISOString()
+    }
+  ];
 }
 
-// Menyimpan daftar komentar terbaru ke storage
 function setComments(comments) {
   localStorage.setItem(STORAGE_KEYS.comments, JSON.stringify(comments));
 }
 
-/* ==========================================================
-   [4] LOGIKA DATA & FILTER PRODUK
-   ========================================================== */
-
-// Mencari satu objek produk berdasarkan ID
 function getProductById(id) {
-  return PRODUCTS.find(p => p.id === id);
+  return PRODUCTS.find((p) => p.id === id);
 }
 
-// Menghasilkan daftar produk yang sudah dibubuhi status 'liked' (true/false)
 function getProductStateList() {
   const likes = getLikes();
-  return PRODUCTS.map(p => ({
+  return PRODUCTS.map((p) => ({
     ...p,
     liked: Boolean(likes[p.id])
   }));
 }
 
-// Menyaring produk berdasarkan kata kunci pencarian dan kategori yang dipilih
 function filteredProducts() {
   const q = (els.searchInput?.value || "").trim().toLowerCase();
   const category = els.filterCategory?.value || "";
-  return getProductStateList().filter(p => {
+
+  return getProductStateList().filter((p) => {
     const matchText =
       p.name.toLowerCase().includes(q) ||
       p.description.toLowerCase().includes(q);
@@ -202,15 +171,10 @@ function filteredProducts() {
   });
 }
 
-/* ==========================================================
-   [5] FUNGSI RENDER (MENAMPILKAN KE LAYAR)
-   ========================================================== */
-
-// Menampilkan kartu produk ke dalam grid HTML yang ditentukan
 function renderProducts(list, target = els.productGrid) {
-  if (!target) return; // Jika elemen target tidak ada di halaman ini, batalkan
+  if (!target) return;
 
-  target.innerHTML = list.map(product => `
+  target.innerHTML = list.map((product) => `
     <article class="product-card" data-name="${escapeHtml(product.name.toLowerCase())}">
       <div class="image-wrapper">
         <img class="product-image" src="${product.image}" alt="${escapeHtml(product.name)}">
@@ -218,7 +182,7 @@ function renderProducts(list, target = els.productGrid) {
           <span>${escapeHtml(product.name)}</span>
         </div>
       </div>
-      
+
       <div class="product-body">
         <h4>${escapeHtml(product.name)}</h4>
         <p>${escapeHtml(product.description)}</p>
@@ -227,89 +191,68 @@ function renderProducts(list, target = els.productGrid) {
           <span>★ <span id="likeCount-${product.id}">${product.liked ? 1 : 0}</span></span>
         </div>
         <div class="action-row">
-          <button class="icon-btn ${product.liked ? "active" : ""}" onclick="toggleLike(${product.id})" id="likeBtn-${product.id}">
+          <button class="icon-btn ${product.liked ? "active" : ""}" onclick="toggleLike(${product.id})" id="likeBtn-${product.id}" type="button">
             ${product.liked ? "Liked" : "Like"}
           </button>
-          <button class="icon-btn" onclick="addToCart(${product.id})">Tambah</button>
+          <button class="icon-btn" onclick="addToCart(${product.id})" type="button">Tambah</button>
         </div>
       </div>
     </article>
   `).join("");
 }
 
-// Mengelola tampilan keranjang belanja dan kalkulasi total harga
 function renderCart() {
   const cart = getCart();
   const entries = Object.values(cart);
 
-  // Render list untuk sidebar/modal keranjang jika ada
-  if (els.cartList) {
-    if (!entries.length) {
-      els.cartList.innerHTML = '<p class="empty-state">Keranjang Anda kosong. Silakan tambahkan produk.</p>';
-    } else {
-      els.cartList.innerHTML = entries.map(item => `
-        <div class="cart-item">
-          <img src="${item.image}" alt="${escapeHtml(item.name)}">
-          <div>
-            <h4>${escapeHtml(item.name)}</h4>
-            <p>${rupiah(item.price)} × ${item.qty}</p>
-          </div>
-          <div class="qty-controls">
-            <button onclick="changeQty(${item.id}, -1)">−</button>
-            <strong>${item.qty}</strong>
-            <button onclick="changeQty(${item.id}, 1)">+</button>
-          </div>
-        </div>
-      `).join("");
-    }
-  }
+  const renderList = (target) => {
+    if (!target) return;
 
-  // Render list untuk halaman utama keranjang jika ada
-  if (els.cartItems) {
     if (!entries.length) {
-      els.cartItems.innerHTML = '<p class="empty-state">Keranjang Anda kosong. <a href="produk.html">Mulai belanja sekarang</a></p>';
-    } else {
-      els.cartItems.innerHTML = entries.map(item => `
-        <div class="cart-item">
-          <img src="${item.image}" alt="${escapeHtml(item.name)}">
-          <div>
-            <h4>${escapeHtml(item.name)}</h4>
-            <p>${rupiah(item.price)} × ${item.qty}</p>
-          </div>
-          <div class="qty-controls">
-            <button onclick="changeQty(${item.id}, -1)">−</button>
-            <strong>${item.qty}</strong>
-            <button onclick="changeQty(${item.id}, 1)">+</button>
-          </div>
-        </div>
-      `).join("");
+      target.innerHTML = '<p class="empty-state">Keranjang Anda kosong. Silakan tambahkan produk.</p>';
+      return;
     }
-  }
 
-  // Menghitung angka-angka untuk ringkasan belanja
+    target.innerHTML = entries.map((item) => `
+      <div class="cart-item">
+        <img src="${item.image}" alt="${escapeHtml(item.name)}">
+        <div>
+          <h4>${escapeHtml(item.name)}</h4>
+          <p>${rupiah(item.price)} × ${item.qty}</p>
+        </div>
+        <div class="qty-controls">
+          <button type="button" onclick="changeQty(${item.id}, -1)">−</button>
+          <strong>${item.qty}</strong>
+          <button type="button" onclick="changeQty(${item.id}, 1)">+</button>
+        </div>
+      </div>
+    `).join("");
+  };
+
+  renderList(els.cartList);
+  renderList(els.cartItems);
+
   const itemCount = entries.reduce((sum, item) => sum + item.qty, 0);
   const subtotal = entries.reduce((sum, item) => sum + item.qty * item.price, 0);
-  const taxValue = Math.round(subtotal * 0.1); // Pajak 10%
-  const total = subtotal + taxValue;
+  const taxValue = Math.round(subtotal * 0.1);
+  const totalValue = subtotal + taxValue;
 
-  // Memperbarui teks pada elemen-elemen ringkasan
   if (els.cartCount) els.cartCount.textContent = itemCount;
   if (els.summaryItems) els.summaryItems.textContent = itemCount;
-  if (els.summaryTotal) els.summaryTotal.textContent = rupiah(total);
+  if (els.summaryTotal) els.summaryTotal.textContent = rupiah(totalValue);
   if (els.subtotal) els.subtotal.textContent = rupiah(subtotal);
   if (els.tax) els.tax.textContent = rupiah(taxValue);
-  if (els.total) els.total.textContent = rupiah(total);
-  if (els.checkoutBtn) els.checkoutBtn.disabled = itemCount === 0; // Matikan tombol jika kosong
+  if (els.total) els.total.textContent = rupiah(totalValue);
+  if (els.checkoutBtn) els.checkoutBtn.disabled = itemCount === 0;
 }
 
-// Memperbarui tampilan tombol like dan angka statistik like di layar
 function renderLikes() {
   const likes = getLikes();
   const likedCount = Object.values(likes).filter(Boolean).length;
 
   if (els.likeTotal) els.likeTotal.textContent = likedCount;
 
-  PRODUCTS.forEach(product => {
+  PRODUCTS.forEach((product) => {
     const btn = document.getElementById(`likeBtn-${product.id}`);
     const cnt = document.getElementById(`likeCount-${product.id}`);
     const liked = Boolean(likes[product.id]);
@@ -322,34 +265,48 @@ function renderLikes() {
   });
 }
 
-// Menampilkan daftar komentar dari komunitas
+function renderCommentImages(comment) {
+  const images = Array.isArray(comment.images) ? comment.images : [];
+  const legacy = comment.image ? [comment.image] : [];
+  const allImages = images.length ? images : legacy;
+
+  if (!allImages.length) return "";
+
+  return `
+    <div class="comment-images">
+      ${allImages.map((img) => `
+        <img src="${img}" alt="Komentar gambar">
+      `).join("")}
+    </div>
+  `;
+}
+
 function renderComments(target = els.commentFeed) {
   if (!target) return;
 
   const comments = getComments();
 
-  target.innerHTML = comments.map(comment => `
+  target.innerHTML = comments.map((comment) => `
     <div class="comment-item">
       <h4>${escapeHtml(comment.name || "Anonim")}</h4>
-      <div>${"⭐".repeat(Math.max(0, Math.min(5, comment.rating || 0)))}</div>
-      ${comment.image ? `<img src="${comment.image}" alt="Komentar gambar">` : ""}
+      <div>${"⭐".repeat(Math.max(0, Math.min(5, Number(comment.rating || 0))))}</div>
+      ${renderCommentImages(comment)}
       <p>${escapeHtml(comment.text || "")}</p>
     </div>
   `).join("");
 }
 
-// Fungsi render khusus untuk halaman Beranda (Index)
 function renderHome() {
   if (els.homeProductGrid) {
-    renderProducts(getProductStateList().slice(0, 3), els.homeProductGrid); // Hanya tampilkan 3 produk
+    renderProducts(getProductStateList().slice(0, 3), els.homeProductGrid);
   }
 
   if (els.cartPreview) {
-    const cart = Object.values(getCart()).slice(0, 2); // Hanya tampilkan 2 item keranjang
+    const cart = Object.values(getCart()).slice(0, 2);
     if (!cart.length) {
       els.cartPreview.innerHTML = '<p class="empty-state">Keranjang kosong. Mulai belanja sekarang!</p>';
     } else {
-      els.cartPreview.innerHTML = cart.map(item => `
+      els.cartPreview.innerHTML = cart.map((item) => `
         <div class="cart-preview-item">
           <img src="${item.image}" alt="${escapeHtml(item.name)}">
           <div>
@@ -362,18 +319,18 @@ function renderHome() {
   }
 
   if (els.homeCommentFeed) {
-    const comments = getComments().slice(0, 3); // Hanya tampilkan 3 komentar terbaru
-    els.homeCommentFeed.innerHTML = comments.map(comment => `
+    const comments = getComments().slice(0, 3);
+    els.homeCommentFeed.innerHTML = comments.map((comment) => `
       <div class="comment-item">
         <h4>${escapeHtml(comment.name || "Anonim")}</h4>
-        <div>${"⭐".repeat(Math.max(0, Math.min(5, comment.rating || 0)))}</div>
+        <div>${"⭐".repeat(Math.max(0, Math.min(5, Number(comment.rating || 0))))}</div>
+        ${renderCommentImages(comment)}
         <p>${escapeHtml(comment.text || "")}</p>
       </div>
     `).join("");
   }
 }
 
-// Menjalankan penyegaran tampilan untuk semua komponen
 function refreshAll() {
   renderLikes();
   renderCart();
@@ -381,29 +338,23 @@ function refreshAll() {
   renderHome();
 }
 
-/* ==========================================================
-   [6] AKSI GLOBAL (DAPAT DIPANGGIL DARI HTML)
-   ========================================================== */
-
-// Menangani klik tombol Like
-window.toggleLike = function(id) {
+window.toggleLike = function (id) {
   const likes = getLikes();
-  likes[id] = !likes[id]; // Balikkan status like
+  likes[id] = !likes[id];
   setLikes(likes);
   renderLikes();
   renderHome();
 };
 
-// Menangani klik tombol tambah ke keranjang
-window.addToCart = function(id) {
+window.addToCart = function (id) {
   const product = getProductById(id);
   if (!product) return;
 
   const cart = getCart();
   if (!cart[id]) {
-    cart[id] = { ...product, qty: 1 }; // Tambah item baru
+    cart[id] = { ...product, qty: 1 };
   } else {
-    cart[id].qty += 1; // Tambah jumlah jika sudah ada
+    cart[id].qty += 1;
   }
 
   setCart(cart);
@@ -411,14 +362,13 @@ window.addToCart = function(id) {
   renderHome();
 };
 
-// Mengubah kuantitas item di dalam keranjang
-window.changeQty = function(id, delta) {
+window.changeQty = function (id, delta) {
   const cart = getCart();
   if (!cart[id]) return;
 
   cart[id].qty += delta;
   if (cart[id].qty <= 0) {
-    delete cart[id]; // Hapus item jika qty jadi 0 atau kurang
+    delete cart[id];
   }
 
   setCart(cart);
@@ -426,25 +376,324 @@ window.changeQty = function(id, delta) {
   renderHome();
 };
 
-/* ==========================================================
-   [7] PEMROSESAN MEDIA (GAMBAR)
-   ========================================================== */
-
-// Mengonversi file gambar dari input menjadi string teks (Data URL) agar bisa disimpan di storage
 function readFileAsDataURL(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
+    reader.onerror = () => reject(new Error("Gagal membaca file."));
     reader.readAsDataURL(file);
   });
 }
 
-/* ==========================================================
-   [8] EVENT LISTENERS (PENANGAN KEJADIAN)
-   ========================================================== */
+function loadImageFromFile(file) {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
 
-// Deteksi saat user mengetik di kolom pencarian
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(img);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Gagal memuat gambar."));
+    };
+
+    img.src = objectUrl;
+  });
+}
+
+function drawToCanvas(img, maxWidth = 1024, maxHeight = 1024) {
+  let { width, height } = img;
+
+  if (width > maxWidth || height > maxHeight) {
+    const ratio = Math.min(maxWidth / width, maxHeight / height);
+    width = Math.round(width * ratio);
+    height = Math.round(height * ratio);
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    throw new Error("Canvas tidak tersedia.");
+  }
+
+  ctx.drawImage(img, 0, 0, width, height);
+  return canvas;
+}
+
+function canvasToBlob(canvas, mimeType = "image/jpeg", quality = 0.9) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error("Gagal mengompres gambar."));
+        return;
+      }
+      resolve(blob);
+    }, mimeType, quality);
+  });
+}
+
+async function compressImage(file, options = {}) {
+  const {
+    maxWidth = 1024,
+    maxHeight = 1024,
+    targetSizeMB = 1,
+    minQuality = 0.35,
+    startQuality = 0.9
+  } = options;
+
+  const img = await loadImageFromFile(file);
+  const canvas = drawToCanvas(img, maxWidth, maxHeight);
+
+  let quality = startQuality;
+  let blob = await canvasToBlob(canvas, "image/jpeg", quality);
+  const targetSizeBytes = targetSizeMB * 1024 * 1024;
+
+  while (blob.size > targetSizeBytes && quality > minQuality) {
+    quality = Math.max(minQuality, +(quality - 0.1).toFixed(2));
+    blob = await canvasToBlob(canvas, "image/jpeg", quality);
+  }
+
+  return blob;
+}
+
+function fileLikeFromBlob(blob, originalName = "image.jpg") {
+  try {
+    return new File([blob], originalName, {
+      type: blob.type || "image/jpeg",
+      lastModified: Date.now()
+    });
+  } catch {
+    return blob;
+  }
+}
+
+class ImageUploader {
+  constructor({ input, previewContainer, maxFiles = 3, maxFileSizeMB = 3 }) {
+    this.input = input;
+    this.previewContainer = previewContainer;
+    this.maxFiles = maxFiles;
+    this.maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
+    this.items = [];
+    this.onChange = this.onChange.bind(this);
+
+    if (this.input && this.previewContainer) {
+      this.input.addEventListener("change", this.onChange);
+      this.syncState();
+    }
+  }
+
+  async onChange(event) {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+
+    for (const file of files) {
+      if (this.items.length >= this.maxFiles) {
+        alert(`Maksimal ${this.maxFiles} gambar.`);
+        break;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        alert("File harus berupa gambar.");
+        continue;
+      }
+
+      if (file.size > this.maxFileSizeBytes) {
+        alert("Ukuran gambar maksimal 3MB.");
+        continue;
+      }
+
+      try {
+        const compressedBlob = await compressImage(file, {
+          maxWidth: 1024,
+          maxHeight: 1024,
+          targetSizeMB: 1
+        });
+
+        const previewUrl = URL.createObjectURL(compressedBlob);
+        const storedFile = fileLikeFromBlob(compressedBlob, file.name || "image.jpg");
+
+        this.items.push({
+          file: storedFile,
+          previewUrl,
+          name: file.name || "image.jpg"
+        });
+
+        this.render();
+      } catch (error) {
+        console.error(error);
+        alert("Gagal memproses gambar.");
+      }
+    }
+
+    this.input.value = "";
+    this.syncState();
+  }
+
+  remove(index) {
+    const item = this.items[index];
+    if (item?.previewUrl) {
+      URL.revokeObjectURL(item.previewUrl);
+    }
+
+    this.items.splice(index, 1);
+    this.render();
+    this.syncState();
+  }
+
+  render() {
+    if (!this.previewContainer) return;
+
+    if (!this.items.length) {
+      this.previewContainer.innerHTML = "";
+      return;
+    }
+
+    this.previewContainer.innerHTML = this.items.map((item, index) => `
+      <div class="img-preview">
+        <img src="${item.previewUrl}" alt="${escapeHtml(item.name)}">
+        <button type="button" class="remove-btn" data-index="${index}" aria-label="Hapus gambar">×</button>
+      </div>
+    `).join("");
+
+    this.previewContainer.querySelectorAll(".remove-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        const index = Number(button.dataset.index);
+        if (!Number.isNaN(index)) {
+          this.remove(index);
+        }
+      });
+    });
+  }
+
+  syncState() {
+    if (!this.input) return;
+    this.input.disabled = this.items.length >= this.maxFiles;
+  }
+
+  getFiles() {
+    return this.items.map((item) => item.file);
+  }
+
+  async getDataURLs() {
+    const result = [];
+    for (const item of this.items) {
+      const dataUrl = await readFileAsDataURL(item.file);
+      result.push(dataUrl);
+    }
+    return result;
+  }
+
+  reset() {
+    for (const item of this.items) {
+      if (item?.previewUrl) {
+        URL.revokeObjectURL(item.previewUrl);
+      }
+    }
+
+    this.items = [];
+    if (this.input) {
+      this.input.value = "";
+      this.input.disabled = false;
+    }
+    this.render();
+  }
+
+  destroy() {
+    this.reset();
+    if (this.input) {
+      this.input.removeEventListener("change", this.onChange);
+    }
+  }
+}
+
+let uploader = null;
+
+function updateStarUI(value) {
+  if (!els.starRating) return;
+
+  const stars = [...els.starRating.querySelectorAll(".star")];
+  stars.forEach((star) => {
+    const starValue = Number(star.dataset.value);
+    star.classList.toggle("active", starValue <= value);
+  });
+}
+
+if (els.starRating && els.commentRating) {
+  const stars = [...els.starRating.querySelectorAll(".star")];
+
+  stars.forEach((star) => {
+    star.addEventListener("click", () => {
+      const value = Number(star.dataset.value);
+      els.commentRating.value = String(value);
+      updateStarUI(value);
+    });
+  });
+}
+
+if (els.commentImage && els.imagePreview) {
+  uploader = new ImageUploader({
+    input: els.commentImage,
+    previewContainer: els.imagePreview,
+    maxFiles: 3,
+    maxFileSizeMB: 3
+  });
+}
+
+function clearCommentForm() {
+  if (els.commentForm) els.commentForm.reset();
+  if (els.commentRating) els.commentRating.value = "0";
+  updateStarUI(0);
+  if (uploader) uploader.reset();
+}
+
+async function handleCommentSubmit(event) {
+  event.preventDefault();
+
+  const name = (els.userName?.value || "").trim() || "Anonim";
+  const text = (els.commentText?.value || "").trim();
+  const rating = Number(els.commentRating?.value || 0);
+
+  if (!text && (!uploader || uploader.getFiles().length === 0)) {
+    alert("Tulis komentar atau unggah gambar.");
+    return;
+  }
+
+  let images = [];
+  if (uploader && uploader.getFiles().length) {
+    images = await uploader.getDataURLs();
+  }
+
+  const comments = getComments();
+  comments.unshift({
+    name,
+    text,
+    rating,
+    images,
+    date: new Date().toISOString()
+  });
+
+  setComments(comments);
+
+  clearCommentForm();
+  renderComments();
+  renderHome();
+}
+
+if (els.commentForm) {
+  els.commentForm.addEventListener("submit", (event) => {
+    handleCommentSubmit(event).catch((error) => {
+      console.error(error);
+      alert("Gagal mengirim komentar.");
+    });
+  });
+}
+
 if (els.searchInput) {
   els.searchInput.addEventListener("input", () => {
     renderProducts(filteredProducts());
@@ -452,7 +701,6 @@ if (els.searchInput) {
   });
 }
 
-// Deteksi saat user mengubah kategori produk
 if (els.filterCategory) {
   els.filterCategory.addEventListener("change", () => {
     renderProducts(filteredProducts());
@@ -460,125 +708,31 @@ if (els.filterCategory) {
   });
 }
 
-// Deteksi klik tombol kosongkan keranjang
 if (els.clearCart) {
   els.clearCart.addEventListener("click", () => {
-    setCart({}); // Set storage jadi objek kosong
+    setCart({});
     renderCart();
     renderHome();
   });
 }
 
-// Deteksi klik tombol checkout
 if (els.checkoutBtn) {
   els.checkoutBtn.addEventListener("click", () => {
     alert("Demo front-end: checkout belum dihubungkan ke backend.");
   });
 }
 
-// Logika interaksi rating bintang (klik bintang untuk memberi nilai)
-if (els.starRating && els.commentRating) {
-  const stars = [...els.starRating.querySelectorAll(".star")];
+function init() {
+  renderProducts(filteredProducts());
+  refreshAll();
 
-  const updateStars = (value) => {
-    stars.forEach(star => {
-      const starValue = Number(star.dataset.value);
-      star.classList.toggle("active", starValue <= value); // Aktifkan bintang jika nilai <= yang dipilih
-    });
-  };
-
-  stars.forEach(star => {
-    star.addEventListener("click", () => {
-      const value = Number(star.dataset.value);
-      els.commentRating.value = String(value); // Simpan nilai ke hidden input
-      updateStars(value);
-    });
-  });
+  if (els.commentRating) {
+    updateStarUI(Number(els.commentRating.value || 0));
+  }
 }
 
-// Menangani pengiriman form komentar lengkap
-if (els.commentForm) {
-  els.commentForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // Jangan refresh halaman
+document.addEventListener("DOMContentLoaded", init);
 
-    const name = (els.userName?.value || "").trim();
-    const text = (els.commentText?.value || "").trim();
-    const rating = Number(els.commentRating?.value || 0);
-    const file = els.commentImage?.files?.[0] || null;
-
-    if (!name || !text) return; // Validasi minimal
-
-    let imageData = null;
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) { // Batas 2MB agar storage tidak penuh
-        alert("Ukuran gambar maksimal 2MB.");
-        return;
-      }
-      imageData = await readFileAsDataURL(file);
-    }
-
-    const comments = getComments();
-    comments.unshift({ // Tambah ke awal daftar agar muncul paling atas
-      name,
-      text,
-      rating,
-      image: imageData,
-      date: new Date().toISOString()
-    });
-    setComments(comments);
-
-    // Reset form setelah sukses
-    els.commentForm.reset();
-    if (els.commentRating) els.commentRating.value = "0";
-    if (els.starRating) {
-      [...els.starRating.querySelectorAll(".star")].forEach(s => s.classList.remove("active"));
-    }
-
-    renderComments();
-    renderHome();
-  });
-}
-
-// Menangani posting komentar cepat (hanya teks/gambar tanpa nama penuh)
-if (els.postComment) {
-  els.postComment.addEventListener("click", async () => {
-    const text = (els.commentText?.value || "").trim();
-    const file = els.commentImage?.files?.[0] || null;
-
-    if (!text && !file) return;
-
-    let imageData = null;
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        alert("Ukuran gambar maksimal 2MB.");
-        return;
-      }
-      imageData = await readFileAsDataURL(file);
-    }
-
-    const comments = getComments();
-    comments.unshift({
-      name: "Pengunjung",
-      text: text || "Komentar gambar",
-      rating: 0,
-      image: imageData,
-      date: new Date().toISOString()
-    });
-    setComments(comments);
-
-    if (els.commentText) els.commentText.value = "";
-    if (els.commentImage) els.commentImage.value = "";
-
-    renderComments();
-    renderHome();
-  });
-}
-
-/* ==========================================================
-   [9] INISIALISASI AWAL
-   Berjalan otomatis saat halaman selesai dimuat.
-   ========================================================== */
-document.addEventListener("DOMContentLoaded", () => {
-  renderProducts(filteredProducts()); // Tampilkan produk awal
-  refreshAll(); // Sinkronkan semua data UI
+window.addEventListener("beforeunload", () => {
+  if (uploader) uploader.destroy();
 });
