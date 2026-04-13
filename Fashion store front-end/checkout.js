@@ -1,7 +1,8 @@
 // ===== KONFIGURASI =====
 const WHATSAPP_NUMBER = "6281266990566"; 
+const API_URL = "https://script.google.com/macros/s/AKfycbyGOIpbJsVomEjnrZWkgJ5ZWtEIhsRxdZygdwc23droXFRna9z3l9oQcoibnQU5RTbVjQ/exec"; // ganti punyamu
 
-// ===== FUNGSI FORMAT RUPIAH =====
+// ===== FORMAT RUPIAH =====
 function formatRupiah(n) {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -19,8 +20,27 @@ function getCartData() {
   }
 }
 
-// ===== CHECKOUT KE WHATSAPP =====
-function checkoutToWhatsApp() {
+// ===== KIRIM KE DATABASE =====
+async function sendToDatabase(items, total) {
+  const data = {
+    nama: "Customer",
+    produk: items.map(i => `${i.name} (${i.qty})`).join(", "),
+    jumlah: items.reduce((s, i) => s + i.qty, 0),
+    total: total
+  };
+
+  try {
+    await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+  } catch (err) {
+    console.error("Gagal kirim database", err);
+  }
+}
+
+// ===== CHECKOUT =====
+async function checkoutToWhatsApp() {
   const cart = getCartData();
   const items = Object.values(cart);
 
@@ -41,25 +61,30 @@ function checkoutToWhatsApp() {
     totalItem += item.qty;
 
     message += `${index + 1}. ${item.name}%0A`;
-    message += `   Jumlah: ${item.qty}%0A`;
-    message += `   Harga: ${formatRupiah(item.price)}%0A`;
-    message += `   Subtotal: ${formatRupiah(itemTotal)}%0A%0A`;
+    message += `Jumlah: ${item.qty}%0A`;
+    message += `Harga: ${formatRupiah(item.price)}%0A`;
+    message += `Subtotal: ${formatRupiah(itemTotal)}%0A%0A`;
   });
 
   const tax = Math.round(subtotal * 0.1);
   const grandTotal = subtotal + tax;
 
   message += `Total Item: ${totalItem}%0A`;
-  message += `Subtotal: ${formatRupiah(subtotal)}%0A`;
-  message += `Pajak (10%): ${formatRupiah(tax)}%0A`;
   message += `Grand Total: ${formatRupiah(grandTotal)}%0A%0A`;
   message += "Terima kasih 🙏";
 
+  // 🔥 kirim ke Google Sheets
+  await sendToDatabase(items, grandTotal);
+
+  // 🔥 buka WhatsApp
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
   window.open(url, "_blank");
+
+  // 🔥 kosongkan keranjang
+  localStorage.removeItem("lm_cart");
 }
 
-// ===== HUBUNGKAN KE TOMBOL =====
+// ===== EVENT =====
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("checkoutBtn");
 
