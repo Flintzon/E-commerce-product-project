@@ -71,7 +71,7 @@ async function checkoutToWhatsApp() {
 
   message += `Total Item: ${totalItem}%0A`;
   message += `Grand Total: ${formatRupiah(grandTotal)}%0A%0A`;
-  message += "Terima kasih 🙏";
+  message += "Terima kasih !";
 
   // 🔥 kirim ke Google Sheets
   await sendToDatabase(items, grandTotal);
