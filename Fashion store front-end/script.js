@@ -766,11 +766,11 @@ if (els.clearCart) {
   });
 }
 
-if (els.checkoutBtn) {
+/*if (els.checkoutBtn) {
   els.checkoutBtn.addEventListener("click", () => {
     alert("Demo front-end: checkout belum dihubungkan ke backend.");
   });
-}
+} */
 
 function init() {
   renderProducts(filteredProducts());
