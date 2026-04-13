@@ -1,5 +1,5 @@
 // ===== KONFIGURASI =====
-const WHATSAPP_NUMBER = "6281234567890"; // ganti nomor kamu
+const WHATSAPP_NUMBER = "6281266990566"; 
 
 // ===== FUNGSI FORMAT RUPIAH =====
 function formatRupiah(n) {
