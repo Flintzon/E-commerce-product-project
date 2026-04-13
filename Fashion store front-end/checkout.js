@@ -32,7 +32,6 @@ async function sendToDatabase(items, total) {
   try {
  await fetch(API_URL, {
   method: "POST",
-  mode: "no-cors", // 🔥 WAJIB
   headers: {
     "Content-Type": "application/json"
   },
