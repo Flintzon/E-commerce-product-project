@@ -30,11 +30,9 @@ async function sendToDatabase(items, total) {
   };
 
   try {
- await fetch(API_URL, {
+await fetch(API_URL, {
   method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
+  mode: "no-cors", // 🔥 WAJIB
   body: JSON.stringify(data)
 });
   } catch (err) {
