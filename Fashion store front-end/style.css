@@ -316,6 +316,7 @@ main {
 
 .nav {
   display: flex;
+  flex: 1;
   gap: 18px;
   flex-wrap: wrap;
   justify-content: center;
@@ -333,6 +334,42 @@ main {
   height: 2px;
   background: var(--accent);
   border-radius: 999px;
+}
+
+.auth-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.topbar > .auth-menu {
+  margin-left: auto;
+}
+
+.auth-menu .profile-pill,
+.auth-menu .login-link,
+.auth-menu .logout-btn {
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.auth-menu .profile-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-menu .login-link:hover,
+.auth-menu .logout-btn:hover,
+.auth-menu .profile-pill:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .auth-section {

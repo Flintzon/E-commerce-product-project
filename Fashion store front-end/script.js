@@ -112,6 +112,59 @@ function safeParse(key, fallback) {
   }
 }
 
+function getLoggedUser() {
+  try {
+    const user = JSON.parse(localStorage.getItem('lb_user'));
+    return user && typeof user === 'object' ? user : null;
+  } catch {
+    return null;
+  }
+}
+
+function logoutUser() {
+  localStorage.removeItem('lb_user');
+  updateAuthNav();
+  window.location.reload();
+}
+
+function updateAuthNav() {
+  const topbar = document.querySelector('.topbar');
+  if (!topbar) return;
+
+  const existing = document.getElementById('authMenu');
+  if (existing) existing.remove();
+
+  const authMenu = document.createElement('div');
+  authMenu.id = 'authMenu';
+  authMenu.className = 'auth-menu';
+
+  const user = getLoggedUser();
+  if (user?.name) {
+    authMenu.innerHTML = `
+      <div class="profile-pill">Hi, ${escapeHtml(user.name)}</div>
+      <button type="button" class="btn ghost logout-btn">Logout</button>
+    `;
+  } else {
+    authMenu.innerHTML = `
+      <a href="login.html" class="btn ghost login-link">Login</a>
+    `;
+  }
+
+  const cartButton = topbar.querySelector('.cart-pill');
+  if (cartButton) {
+    cartButton.insertAdjacentElement('afterend', authMenu);
+  } else {
+    topbar.appendChild(authMenu);
+  }
+
+  const logoutBtn = authMenu.querySelector('.logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', logoutUser);
+  }
+}
+
+updateAuthNav();
+
 function getLikes() {
   return safeParse(STORAGE_KEYS.likes, {});
 }
