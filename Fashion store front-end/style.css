@@ -335,6 +335,117 @@ main {
   border-radius: 999px;
 }
 
+.auth-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 60px 0 80px;
+}
+
+.auth-panel {
+  width: min(680px, 100%);
+  padding: 0;
+  border-radius: 32px;
+  background: rgba(23, 23, 29, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow);
+}
+
+.slide-window {
+  overflow: hidden;
+  border-radius: 32px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+}
+
+.slide-track {
+  display: flex;
+  width: 200%;
+  transform: translateX(0);
+  transition: transform 0.55s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.auth-panel.signup-active .slide-track {
+  transform: translateX(-50%);
+}
+
+.toggle-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  margin-bottom: 0;
+  border-radius: 32px 32px 0 0;
+  background: var(--panel);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.toggle-btn {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 18px 16px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.toggle-btn.active {
+  background: linear-gradient(145deg, rgba(199, 162, 106, 0.22), rgba(241, 223, 196, 0.15));
+  color: var(--bg);
+}
+
+.toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.auth-form {
+  width: 50%;
+  min-width: 50%;
+  display: grid;
+  gap: 18px;
+  padding: 34px 28px 28px;
+}
+
+.auth-field {
+  display: grid;
+  gap: 10px;
+}
+
+.auth-field label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.auth-field input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background: var(--panel);
+  color: var(--text);
+  padding: 14px 16px;
+  font-size: 0.96rem;
+}
+
+.auth-field input::placeholder {
+  color: rgba(245, 241, 234, 0.4);
+}
+
+.auth-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(199, 162, 106, 0.14);
+}
+
+.auth-footer {
+  padding: 28px 0 40px;
+  text-align: center;
+  color: var(--muted);
+}
+
 .cart-pill {
   border: 1px solid var(--line);
   background: var(--panel);

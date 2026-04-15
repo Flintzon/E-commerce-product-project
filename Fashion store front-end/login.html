@@ -1,0 +1,414 @@
+﻿<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LuxeBeauty — Masuk / Daftar</title>
+  <link rel="icon" type="image/avif" href="img/logo-removebg-preview.avif" />
+
+  <style>
+    :root {
+      --bg: #0f0f12;
+      --panel: #17171d;
+      --panel-2: #1d1d25;
+      --card: rgba(255,255,255,.06);
+      --text: #f5f1ea;
+      --muted: rgba(181,176,167,.85);
+      --line: rgba(255,255,255,.08);
+      --accent: #c7a26a;
+      --accent-2: #f1dfc4;
+      --shadow: 0 18px 50px rgba(0,0,0,.35);
+      --radius: 28px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body.auth-page {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(199,162,106,.22), transparent 26%),
+        radial-gradient(circle at right center, rgba(255,255,255,.08), transparent 22%),
+        var(--bg);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* Topbar Styles (Dipertahankan) */
+    .topbar {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 22px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark {
+      width: 54px; height: 54px; object-fit: contain;
+      border-radius: 16px; background: rgba(255,255,255,.08);
+      padding: 6px; box-shadow: var(--shadow);
+    }
+    .brand h1 { font-size: 1.15rem; margin: 0; letter-spacing: .4px; }
+    .brand p { margin: 4px 0 0; font-size: .88rem; color: var(--muted); }
+    .nav { display: flex; gap: 18px; font-size: .96rem; color: var(--muted); }
+    .nav a { position: relative; padding-bottom: 4px; }
+    .nav a::after {
+      content: ""; position: absolute; left: 0; bottom: 0;
+      width: 0; height: 1px; background: var(--accent); transition: width .25s ease;
+    }
+    .nav a:hover::after { width: 100%; }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    /* SLIDING FORM CONTAINER */
+    .auth-shell {
+      background: var(--card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      max-width: 1000px;
+      min-height: 640px;
+    }
+
+    .form-container {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      transition: all 0.6s ease-in-out;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .sign-in-container {
+      left: 0;
+      width: 50%;
+      z-index: 2;
+    }
+
+    .sign-up-container {
+      left: 0;
+      width: 50%;
+      opacity: 0;
+      z-index: 1;
+    }
+
+    /* OVERLAY STYLES */
+    .overlay-container {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+      transition: transform 0.6s ease-in-out;
+      z-index: 100;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    .overlay {
+      background: radial-gradient(circle at top right, rgba(199,162,106,.3), transparent 50%), var(--panel-2);
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: 0 0;
+      color: #fff;
+      position: relative;
+      left: -100%;
+      height: 100%;
+      width: 200%;
+      transform: translateX(0);
+      transition: transform 0.6s ease-in-out;
+      border-left: 1px solid var(--line);
+    }
+
+    .overlay-panel {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 0 40px;
+      text-align: center;
+      top: 0;
+      height: 100%;
+      width: 50%;
+      transform: translateX(0);
+      transition: transform 0.6s ease-in-out;
+    }
+
+    .overlay-left {
+      transform: translateX(-20%);
+    }
+
+    .overlay-right {
+      right: 0;
+      transform: translateX(0);
+    }
+
+    /* ANIMATION CLASSES (Diaktifkan via JS) */
+    .auth-shell.right-panel-active .sign-in-container {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    .auth-shell.right-panel-active .sign-up-container {
+      transform: translateX(100%);
+      opacity: 1;
+      z-index: 5;
+    }
+
+    .auth-shell.right-panel-active .overlay-container {
+      transform: translateX(-100%);
+      border-radius: var(--radius) 0 0 var(--radius);
+    }
+
+    .auth-shell.right-panel-active .overlay {
+      transform: translateX(50%);
+      border-left: none;
+      border-right: 1px solid var(--line);
+    }
+
+    .auth-shell.right-panel-active .overlay-left {
+      transform: translateX(0);
+    }
+
+    .auth-shell.right-panel-active .overlay-right {
+      transform: translateX(20%);
+    }
+
+    /* FORM ELEMENTS STYLING */
+    .auth-form {
+      display: grid;
+      gap: 16px;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .page-header h2 {
+      margin: 0 0 20px;
+      font-size: 2.2rem;
+      line-height: 1.1;
+    }
+
+    .auth-field { display: grid; gap: 8px; }
+    .auth-field label { font-size: .92rem; color: var(--muted); }
+    .auth-field input {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 15px 16px;
+      outline: none;
+      transition: .25s ease;
+    }
+    .auth-field input:focus {
+      border-color: rgba(199,162,106,.75);
+      box-shadow: 0 0 0 4px rgba(199,162,106,.12);
+      background: rgba(255,255,255,.08);
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 15px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .25s ease;
+      width: 100%;
+      font-size: 1rem;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #1a1328;
+      box-shadow: 0 14px 30px rgba(215,180,106,.24);
+      margin-top: 10px;
+    }
+    .btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 36px rgba(215,180,106,.3);
+    }
+
+    .btn.ghost {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent-2);
+      margin-top: 20px;
+      width: auto;
+      padding: 12px 30px;
+    }
+    .btn.ghost:hover {
+      background: rgba(199,162,106,.1);
+    }
+
+    .form-note {
+      color: var(--muted);
+      font-size: .92rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .auth-shell {
+        min-height: 800px;
+      }
+      .form-container { width: 100%; height: 50%; padding: 24px; }
+      .sign-in-container { top: 0; height: 50%; }
+      .sign-up-container { top: 0; height: 50%; }
+      
+      .overlay-container {
+        left: 0; top: 50%; width: 100%; height: 50%;
+        border-radius: 0 0 var(--radius) var(--radius);
+      }
+      .overlay { width: 100%; height: 200%; left: 0; top: -100%; transform: translateY(0); }
+      .overlay-panel { width: 100%; height: 50%; }
+      .overlay-right { bottom: 0; top: auto; }
+      
+      .auth-shell.right-panel-active .sign-in-container { transform: translateY(-100%); }
+      .auth-shell.right-panel-active .sign-up-container { transform: translateY(0); }
+      .auth-shell.right-panel-active .overlay-container { transform: translateY(-100%); border-radius: var(--radius) var(--radius) 0 0; }
+      .auth-shell.right-panel-active .overlay { transform: translateY(50%); }
+    }
+  </style>
+</head>
+<body class="auth-page">
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html">
+        <img class="brand-mark" src="img/logo-removebg-preview.avif" alt="LuxeBeauty Logo" />
+      </a>
+      <div>
+        <h1>LuxeBeauty</h1>
+        <p>Luxury Fashion store</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Beranda</a>
+      <a href="produk.html">Produk</a>
+      <a href="keranjang.html">Keranjang</a>
+      <a href="komentar.html">Komentar</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="auth-shell" id="authShell">
+      
+      <div class="form-container sign-up-container">
+        <form id="signup-form" class="auth-form" onsubmit="handleSignUp(event)">
+          <div class="page-header">
+            <h2>Buat Akun</h2>
+          </div>
+          <div class="auth-field">
+            <label for="signup-name">Nama Lengkap</label>
+            <input type="text" id="signup-name" placeholder="Masukkan nama Anda" required />
+          </div>
+          <div class="auth-field">
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" placeholder="Masukkan email Anda" required />
+          </div>
+          <div class="auth-field">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" placeholder="Masukkan password Anda" required />
+          </div>
+          <button type="submit" class="btn primary">Daftar Sekarang</button>
+        </form>
+      </div>
+
+      <div class="form-container sign-in-container">
+        <form id="signin-form" class="auth-form" onsubmit="handleSignIn(event)">
+          <div class="page-header">
+            <h2>Masuk</h2>
+          </div>
+          <div class="auth-field">
+            <label for="signin-email">Email</label>
+            <input type="email" id="signin-email" placeholder="Masukkan email Anda" required />
+          </div>
+          <div class="auth-field">
+            <label for="signin-password">Password</label>
+            <input type="password" id="signin-password" placeholder="Masukkan password Anda" required />
+          </div>
+          <button type="submit" class="btn primary">Masuk ke Akun</button>
+        </form>
+      </div>
+
+      <div class="overlay-container">
+        <div class="overlay">
+          <div class="overlay-panel overlay-left">
+            <h2>Sudah Punya Akun?</h2>
+            <p class="form-note">Masuk untuk melanjutkan belanja koleksi fashion premium dan keranjang Anda.</p>
+            <button class="btn ghost" id="signInBtn">Masuk Sekarang</button>
+          </div>
+          <div class="overlay-panel overlay-right">
+            <h2>Halo, Fashionista!</h2>
+            <p class="form-note">Daftar untuk menyimpan favorit, menulis komentar, dan menikmati pengalaman belanja yang lebih eksklusif.</p>
+            <button class="btn ghost" id="signUpBtn">Buat Akun Baru</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 LuxeBeauty. Luxury Fashion e-commerce.</p>
+  </footer>
+
+  <script>
+    // Logika Panel Sliding
+    const signUpBtn = document.getElementById('signUpBtn');
+    const signInBtn = document.getElementById('signInBtn');
+    const authShell = document.getElementById('authShell');
+
+    signUpBtn.addEventListener('click', () => {
+      authShell.classList.add("right-panel-active");
+    });
+
+    signInBtn.addEventListener('click', () => {
+      authShell.classList.remove("right-panel-active");
+    });
+
+    // Logika Submit Form
+    function handleSignIn(event) {
+      event.preventDefault();
+      alert("Masuk berhasil! Mengarahkan ke Beranda...");
+    }
+
+    function handleSignUp(event) {
+      event.preventDefault();
+      alert("Akun baru telah berhasil dibuat! Silakan masuk.");
+      // Otomatis menggeser kembali ke halaman login setelah mendaftar
+      authShell.classList.remove("right-panel-active");
+      document.getElementById('signin-email').value = document.getElementById('signup-email').value;
+    }
+  </script>
+</body>
+</html>
