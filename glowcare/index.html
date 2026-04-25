@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlowCare — Skincare & Self-Care Marketplace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] },
+          colors: {
+            primary: { 50:'#fff7ed',100:'#ffedd5',200:'#fed7aa',300:'#fdba74',400:'#fb923c',500:'#f97316',600:'#ea580c',700:'#c2410c',800:'#9a3412',900:'#7c2d12' },
+            shop: { bg:'#f5f5f5', card:'#ffffff', orange:'#ee4d2d', red:'#ee4d2d', darkred:'#d73211', text:'#222222', sub:'#757575', price:'#ee4d2d', star:'#ffce3d', border:'#e8e8e8', badge:'#ee4d2d' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',sans-serif; background:#f5f5f5; color:#222; }
+    ::-webkit-scrollbar { height:4px; width:6px; }
+    ::-webkit-scrollbar-thumb { background:#ccc; border-radius:4px; }
+    .hide-scrollbar::-webkit-scrollbar { display:none; }
+    .hide-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+    .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    @keyframes flash { 0%,100%{opacity:1} 50%{opacity:.6} }
+    .flash-anim { animation: flash 1s infinite; }
+    @keyframes slideIn { from{transform:translateX(100%)} to{transform:translateX(0)} }
+    .slide-in { animation: slideIn .3s ease-out; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .fade-in { animation: fadeIn .4s ease-out; }
+    @keyframes pulse-badge { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+    .pulse-badge { animation: pulse-badge .3s ease; }
+    .product-card:hover { transform:translateY(-2px); box-shadow:0 4px 20px rgba(0,0,0,.12); }
+    .product-card { transition:all .2s ease; }
+    .product-card:hover .prod-img { transform:scale(1.05); }
+    .prod-img { transition:transform .3s ease; }
+    .cat-item:hover { transform:translateY(-3px); }
+    .cat-item { transition:all .2s ease; }
+    .banner-dot.active { background:#ee4d2d; }
+    .banner-dot { transition:background .2s; }
+    .toast { animation: fadeIn .3s ease-out; }
+    .qty-btn:active { background:#ee4d2d; color:#fff; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-r from-shop-orange to-shop-darkred text-white sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-3 py-2">
+      <!-- Top bar -->
+      <div class="flex items-center justify-between text-xs mb-2">
+        <div class="flex items-center gap-4">
+          <a href="#" class="hover:opacity-80">Seller Centre</a>
+          <span class="opacity-40">|</span>
+          <a href="#" class="hover:opacity-80">Download</a>
+          <span class="opacity-40">|</span>
+          <span>Follow kami di
+            <a href="#" class="inline-flex items-center gap-1 ml-1 hover:opacity-80"><span class="iconify" data-icon="mdi:facebook" data-width="14"></span></a>
+            <a href="#" class="inline-flex items-center gap-1 hover:opacity-80"><span class="iconify" data-icon="mdi:instagram" data-width="14"></span></a>
+          </span>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="#" class="hover:opacity-80 flex items-center gap-1"><span class="iconify" data-icon="mdi:bell-outline" data-width="14"></span> Notifikasi</a>
+          <a href="#" class="hover:opacity-80 flex items-center gap-1"><span class="iconify" data-icon="mdi:help-circle-outline" data-width="14"></span> Bantuan</a>
+          <span class="opacity-40">|</span>
+          <a href="#" onclick="openAuthModal('register')" class="hover:opacity-80 font-semibold">Daftar</a>
+          <span class="opacity-40">|</span>
+          <a href="#" onclick="openAuthModal('login')" class="hover:opacity-80 font-semibold">Masuk</a>
+        </div>
+      </div>
+      <!-- Main nav -->
+      <div class="flex items-center gap-4">
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-2 shrink-0" onclick="resetFilters()">
+          <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+            <span class="iconify text-shop-orange" data-icon="mdi:sparkles" data-width="24"></span>
+          </div>
+          <span class="text-2xl font-bold tracking-tight">GlowCare</span>
+        </a>
+        <!-- Search -->
+        <div class="flex-1 relative">
+          <div class="flex">
+            <input id="searchInput" type="text" placeholder="Cari produk skincare & self-care..." 
+              class="w-full py-2.5 px-4 rounded-l-lg text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white/50" 
+              onkeydown="if(event.key==='Enter')searchProducts()">
+            <button onclick="searchProducts()" class="bg-shop-darkred hover:bg-shop-orange px-5 rounded-r-lg transition-colors">
+              <span class="iconify" data-icon="mdi:magnify" data-width="22"></span>
+            </button>
+          </div>
+          <div class="flex gap-2 mt-1.5 text-[10px] opacity-80">
+            <a href="#" onclick="quickSearch('Serum')" class="hover:underline">Serum</a>
+            <a href="#" onclick="quickSearch('Sunscreen')" class="hover:underline">Sunscreen</a>
+            <a href="#" onclick="quickSearch('Moisturizer')" class="hover:underline">Moisturizer</a>
+            <a href="#" onclick="quickSearch('Toner')" class="hover:underline">Toner</a>
+            <a href="#" onclick="quickSearch('Cushion')" class="hover:underline">Cushion</a>
+          </div>
+        </div>
+        <!-- Cart -->
+        <button onclick="toggleCart()" class="relative p-2 hover:opacity-80 transition shrink-0">
+          <span class="iconify" data-icon="mdi:cart-outline" data-width="28"></span>
+          <span id="cartBadge" class="absolute -top-1 -right-1 bg-yellow-400 text-shop-orange text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CATEGORY NAV -->
+  <nav class="bg-white border-b border-shop-border sticky top-[108px] z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-3">
+      <div class="flex items-center gap-1 overflow-x-auto hide-scrollbar py-2">
+        <button onclick="filterCategory('all')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-shop-orange text-white" data-cat="all">Semua</button>
+        <button onclick="filterCategory('skintific')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="skintific">Skintific</button>
+        <button onclick="filterCategory('somethinc')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="somethinc">Somethinc</button>
+        <button onclick="filterCategory('wardah')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="wardah">Wardah</button>
+        <button onclick="filterCategory('emina')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="emina">Emina</button>
+        <button onclick="filterCategory('avoskin')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="avoskin">Avoskin</button>
+        <button onclick="filterCategory('finallyfoundyou')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="finallyfoundyou">Finally Found You</button>
+        <button onclick="filterCategory('truetoskin')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="truetoskin">True to Skin</button>
+        <button onclick="filterCategory('barenbliss')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="barenbliss">Barenbliss</button>
+        <button onclick="filterCategory('msglows')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="msglows">MS GLOWS</button>
+        <button onclick="filterCategory('implora')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="implora">Implora</button>
+        <button onclick="filterCategory('facial')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="facial">Facial Wash</button>
+        <button onclick="filterCategory('sunscreen')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="sunscreen">Sunscreen</button>
+        <button onclick="filterCategory('serum')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="serum">Serum</button>
+        <button onclick="filterCategory('bodycare')" class="cat-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-shop-orange hover:text-white" data-cat="bodycare">Body Care</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-3 py-4">
+
+    <!-- BANNER CAROUSEL -->
+    <section class="mb-5">
+      <div class="relative rounded-xl overflow-hidden h-48 sm:h-64 md:h-80">
+        <div id="bannerContainer" class="flex transition-transform duration-500 h-full">
+          <div class="min-w-full h-full bg-gradient-to-r from-pink-500 to-orange-400 flex items-center px-8 md:px-16">
+            <div class="text-white">
+              <p class="text-xs md:text-sm font-semibold uppercase tracking-wider mb-1 opacity-90">✨ Flash Sale Hari Ini</p>
+              <h2 class="text-2xl md:text-5xl font-bold mb-2">Diskon hingga 70%</h2>
+              <p class="text-sm md:text-lg opacity-90 mb-4">Produk skincare best-seller, limited stock!</p>
+              <button onclick="document.getElementById('flashSale').scrollIntoView({behavior:'smooth'})" class="bg-white text-shop-orange font-semibold px-5 py-2 rounded-lg text-sm hover:bg-gray-100 transition">Belanja Sekarang</button>
+            </div>
+          </div>
+          <div class="min-w-full h-full bg-gradient-to-r from-purple-600 to-pink-500 flex items-center px-8 md:px-16">
+            <div class="text-white">
+              <p class="text-xs md:text-sm font-semibold uppercase tracking-wider mb-1 opacity-90">🌸 Brand Highlight</p>
+              <h2 class="text-2xl md:text-5xl font-bold mb-2">Skintific Festival</h2>
+              <p class="text-sm md:text-lg opacity-90 mb-4">Koleksi terlengkap Skintific, free gift!</p>
+              <button onclick="filterCategory('skintific')" class="bg-white text-purple-600 font-semibold px-5 py-2 rounded-lg text-sm hover:bg-gray-100 transition">Lihat Koleksi</button>
+            </div>
+          </div>
+          <div class="min-w-full h-full bg-gradient-to-r from-teal-500 to-emerald-400 flex items-center px-8 md:px-16">
+            <div class="text-white">
+              <p class="text-xs md:text-sm font-semibold uppercase tracking-wider mb-1 opacity-90">🌿 New Arrival</p>
+              <h2 class="text-2xl md:text-5xl font-bold mb-2">Finally Found You</h2>
+              <p class="text-sm md:text-lg opacity-90 mb-4">Brand lokal premium untuk kulit sempurna</p>
+              <button onclick="filterCategory('finallyfoundyou')" class="bg-white text-teal-600 font-semibold px-5 py-2 rounded-lg text-sm hover:bg-gray-100 transition">Cek Sekarang</button>
+            </div>
+          </div>
+        </div>
+        <button onclick="prevBanner()" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-9 h-9 rounded-full flex items-center justify-center transition">
+          <span class="iconify" data-icon="mdi:chevron-left" data-width="24"></span>
+        </button>
+        <button onclick="nextBanner()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-9 h-9 rounded-full flex items-center justify-center transition">
+          <span class="iconify" data-icon="mdi:chevron-right" data-width="24"></span>
+        </button>
+        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+          <button onclick="goToBanner(0)" class="banner-dot active w-2.5 h-2.5 rounded-full bg-white/60"></button>
+          <button onclick="goToBanner(1)" class="banner-dot w-2.5 h-2.5 rounded-full bg-white/60"></button>
+          <button onclick="goToBanner(2)" class="banner-dot w-2.5 h-2.5 rounded-full bg-white/60"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATEGORY ICONS -->
+    <section class="mb-6">
+      <div class="bg-white rounded-xl p-4 shadow-sm">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">Kategori Pilihan</h3>
+        <div class="grid grid-cols-5 sm:grid-cols-10 gap-2">
+          <button onclick="filterCategory('skintific')" class="cat-item flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-orange-50">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-pink-100 to-pink-200 flex items-center justify-center text-lg">🧴</div>
+            <span class="text-[10px] text-gray-600 text-center leading-tight">Skintific</span>
+          </button>
+          <button onclick="filterCategory('somethinc')" class="cat-item flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-orange-50">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-lg">💧</div>
+            <span class="text-[10px] text-gray-600 text-center leading-tight">Somethinc</span>
+          </button>
+          <button onclick="filterCategory('wardah')" class="cat-item flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-orange-50">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center text-lg">🌺</div>
+            <span class="text-[10px] text-gray-600 text-center leading-tight">Wardah</span>
+          </button>
+          <button onclick="filterCategory('emina')" class="cat-item flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-orange-50">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center text-lg">💜</div>
+            <span class="text-[10px] text-gray-600 text-center leading-tight">Emina</span>
+          </button>
+          <button onclick="filterCategory('avoskin')" class="cat-item flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-orange-50">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center text-lg">🥑</div>
+            <span class="text-[10px] text-gray-600 text-center leading-tight">Avoskin</span>
+          </button>
+          <button onclick="filterCategory('finallyfoundyou')" class="cat-item flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-orange-50">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center text-lg">✨</div>
+            <span class="text-[10px] text-gray-600 text-center leading-tight">FFY</span>
+          </button>
+          <button onclick="filterCategory('truetoskin')" class="cat-item flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-orange-50">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center text-lg">🌿</div>
+            <span class="text-[10px] text-gray-600 text-center leading-tight">True to Skin</span>
+          </button>
+          <button onclick="filterCategory('barenbliss')" class="cat-item flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-orange-50">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center text-lg">💋</div>
+            <span class="text-[10px] text-gray-600 text-center leading-tight">Barenbliss</span>
+          </button>
+          <button onclick="filterCategory('sunscreen')" class="cat-item flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-orange-50">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center text-lg">☀️</div>
+            <span class="text-[10px] text-gray-600 text-center leading-tight">Sunscreen</span>
+          </button>
+          <button onclick="filterCategory('bodycare')" class="cat-item flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-orange-50">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-lg">🛁</div>
+            <span class="text-[10px] text-gray-600 text-center leading-tight">Body Care</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLASH SALE -->
+    <section id="flashSale" class="mb-6">
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-shop-border">
+          <div class="flex items-center gap-3">
+            <h3 class="text-base font-bold text-shop-orange flex items-center gap-1.5">
+              <span class="iconify flash-anim" data-icon="mdi:flash" data-width="20"></span>
+              FLASH SALE
+            </h3>
+            <div id="countdown" class="flex items-center gap-1 text-xs font-bold">
+              <span class="bg-shop-orange text-white px-1.5 py-0.5 rounded" id="cdH">08</span>
+              <span class="text-shop-orange">:</span>
+              <span class="bg-shop-orange text-white px-1.5 py-0.5 rounded" id="cdM">45</span>
+              <span class="text-shop-orange">:</span>
+              <span class="bg-shop-orange text-white px-1.5 py-0.5 rounded" id="cdS">30</span>
+            </div>
+          </div>
+          <button onclick="filterCategory('all')" class="text-shop-orange text-xs font-semibold hover:underline flex items-center gap-0.5">
+            Lihat Semua <span class="iconify" data-icon="mdi:chevron-right" data-width="16"></span>
+          </button>
+        </div>
+        <div class="flex overflow-x-auto hide-scrollbar gap-3 p-4" id="flashSaleContainer">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCT GRID -->
+    <section class="mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-bold text-gray-800" id="productTitle">REKOMENDASI HARIAN</h2>
+        <div class="flex items-center gap-2">
+          <select id="sortSelect" onchange="sortProducts()" class="text-xs border border-shop-border rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-shop-orange">
+            <option value="popular">Terpopuler</option>
+            <option value="newest">Terbaru</option>
+            <option value="price-low">Harga Terendah</option>
+            <option value="price-high">Harga Tertinggi</option>
+            <option value="sale">Diskon Terbesar</option>
+          </select>
+        </div>
+      </div>
+      <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        <!-- Filled by JS -->
+      </div>
+      <div id="noProducts" class="hidden text-center py-16">
+        <span class="iconify text-gray-300 mx-auto" data-icon="mdi:emoticon-sad-outline" data-width="64"></span>
+        <p class="text-gray-400 mt-3 text-sm">Produk tidak ditemukan</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- CART SIDEBAR -->
+  <div id="cartOverlay" class="fixed inset-0 bg-black/50 z-50 hidden" onclick="toggleCart()"></div>
+  <div id="cartSidebar" class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl hidden flex-col">
+    <div class="flex items-center justify-between p-4 border-b border-shop-border">
+      <h3 class="font-bold text-lg flex items-center gap-2">
+        <span class="iconify text-shop-orange" data-icon="mdi:cart" data-width="22"></span>
+        Keranjang Belanja
+      </h3>
+      <button onclick="toggleCart()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+        <span class="iconify" data-icon="mdi:close" data-width="20"></span>
+      </button>
+    </div>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3">
+      <div id="emptyCart" class="text-center py-16">
+        <span class="iconify text-gray-300 mx-auto" data-icon="mdi:cart-outline" data-width="64"></span>
+        <p class="text-gray-400 mt-3 text-sm">Keranjang masih kosong</p>
+        <button onclick="toggleCart()" class="mt-3 text-shop-orange text-sm font-semibold hover:underline">Mulai Belanja</button>
+      </div>
+    </div>
+    <div id="cartFooter" class="hidden border-t border-shop-border p-4 bg-gray-50">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-sm text-gray-600">Total:</span>
+        <span id="cartTotal" class="text-xl font-bold text-shop-orange">Rp0</span>
+      </div>
+      <button onclick="checkout()" class="w-full bg-shop-orange hover:bg-shop-darkred text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2">
+        <span class="iconify" data-icon="mdi:shopping" data-width="18"></span>
+        Checkout (<span id="checkoutCount">0</span>)
+      </button>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div id="authOverlay" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4" onclick="if(event.target===this)closeAuthModal()">
+    <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden fade-in shadow-2xl">
+      <div class="bg-gradient-to-r from-shop-orange to-shop-darkred p-6 text-white text-center">
+        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+          <span class="iconify" data-icon="mdi:sparkles" data-width="32"></span>
+        </div>
+        <h3 id="authTitle" class="text-xl font-bold">Masuk</h3>
+        <p class="text-sm opacity-80 mt-1">Selamat datang di GlowCare</p>
+      </div>
+      <div class="p-6">
+        <div id="authLogin">
+          <div class="space-y-3">
+            <input type="text" placeholder="Email / No. Telepon" class="w-full border border-shop-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-shop-orange/30 focus:border-shop-orange">
+            <input type="password" placeholder="Password" class="w-full border border-shop-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-shop-orange/30 focus:border-shop-orange">
+            <button onclick="doLogin()" class="w-full bg-shop-orange hover:bg-shop-darkred text-white font-semibold py-2.5 rounded-lg transition">Masuk</button>
+          </div>
+          <div class="flex items-center gap-3 my-4">
+            <div class="flex-1 h-px bg-shop-border"></div>
+            <span class="text-xs text-gray-400">ATAU</span>
+            <div class="flex-1 h-px bg-shop-border"></div>
+          </div>
+          <div class="flex gap-3">
+            <button class="flex-1 border border-shop-border rounded-lg py-2 text-sm font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition">
+              <span class="iconify text-blue-600" data-icon="mdi:facebook" data-width="20"></span> Facebook
+            </button>
+            <button class="flex-1 border border-shop-border rounded-lg py-2 text-sm font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition">
+              <span class="iconify text-red-500" data-icon="mdi:google" data-width="20"></span> Google
+            </button>
+          </div>
+          <p class="text-center text-xs text-gray-500 mt-4">Belum punya akun? <a href="#" onclick="openAuthModal('register')" class="text-shop-orange font-semibold hover:underline">Daftar</a></p>
+        </div>
+        <div id="authRegister" class="hidden">
+          <div class="space-y-3">
+            <input type="text" placeholder="Nama Lengkap" class="w-full border border-shop-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-shop-orange/30 focus:border-shop-orange">
+            <input type="text" placeholder="Email" class="w-full border border-shop-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-shop-orange/30 focus:border-shop-orange">
+            <input type="text" placeholder="No. Telepon" class="w-full border border-shop-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-shop-orange/30 focus:border-shop-orange">
+            <input type="password" placeholder="Buat Password" class="w-full border border-shop-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-shop-orange/30 focus:border-shop-orange">
+            <button onclick="doRegister()" class="w-full bg-shop-orange hover:bg-shop-darkred text-white font-semibold py-2.5 rounded-lg transition">Daftar</button>
+          </div>
+          <p class="text-center text-xs text-gray-500 mt-4">Sudah punya akun? <a href="#" onclick="openAuthModal('login')" class="text-shop-orange font-semibold hover:underline">Masuk</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-[60] space-y-2"></div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-shop-border mt-8">
+    <div class="max-w-7xl mx-auto px-4 py-10">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <h4 class="font-bold text-sm mb-3 uppercase tracking-wider text-gray-800">Layanan Pelanggan</h4>
+          <ul class="space-y-2 text-xs text-gray-500">
+            <li><a href="#" class="hover:text-shop-orange transition">Bantuan</a></li>
+            <li><a href="#" class="hover:text-shop-orange transition">Pembayaran</a></li>
+            <li><a href="#" class="hover:text-shop-orange transition">Shopee Guarantee</a></li>
+            <li><a href="#" class="hover:text-shop-orange transition">Lacak Pesanan</a></li>
+            <li><a href="#" class="hover:text-shop-orange transition">Gratis Ongkir</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm mb-3 uppercase tracking-wider text-gray-800">Tentang GlowCare</h4>
+          <ul class="space-y-2 text-xs text-gray-500">
+            <li><a href="#" class="hover:text-shop-orange transition">Tentang Kami</a></li>
+            <li><a href="#" class="hover:text-shop-orange transition">Karir</a></li>
+            <li><a href="#" class="hover:text-shop-orange transition">Kebijakan Privasi</a></li>
+            <li><a href="#" class="hover:text-shop-orange transition">Blog</a></li>
+            <li><a href="#" class="hover:text-shop-orange transition">GlowCare Mall</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm mb-3 uppercase tracking-wider text-gray-800">Pembayaran</h4>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-100 rounded p-1.5 flex items-center justify-center text-[10px] font-bold text-blue-600">BCA</div>
+            <div class="bg-gray-100 rounded p-1.5 flex items-center justify-center text-[10px] font-bold text-blue-800">BNI</div>
+            <div class="bg-gray-100 rounded p-1.5 flex items-center justify-center text-[10px] font-bold text-green-600">GoPay</div>
+            <div class="bg-gray-100 rounded p-1.5 flex items-center justify-center text-[10px] font-bold text-blue-500">OVO</div>
+            <div class="bg-gray-100 rounded p-1.5 flex items-center justify-center text-[10px] font-bold text-purple-600">DANA</div>
+            <div class="bg-gray-100 rounded p-1.5 flex items-center justify-center text-[10px] font-bold text-orange-500">ShopeePay</div>
+          </div>
+          <h4 class="font-bold text-sm mb-2 mt-4 uppercase tracking-wider text-gray-800">Pengiriman</h4>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-100 rounded p-1.5 flex items-center justify-center text-[10px] font-bold text-orange-600">JNE</div>
+            <div class="bg-gray-100 rounded p-1.5 flex items-center justify-center text-[10px] font-bold text-red-600">J&T</div>
+            <div class="bg-gray-100 rounded p-1.5 flex items-center justify-center text-[10px] font-bold text-green-700">SiCepat</div>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm mb-3 uppercase tracking-wider text-gray-800">Ikuti Kami</h4>
+          <ul class="space-y-2 text-xs text-gray-500">
+            <li><a href="#" class="hover:text-shop-orange transition flex items-center gap-2"><span class="iconify" data-icon="mdi:facebook" data-width="16"></span>Facebook</a></li>
+            <li><a href="#" class="hover:text-shop-orange transition flex items-center gap-2"><span class="iconify" data-icon="mdi:instagram" data-width="16"></span>Instagram</a></li>
+            <li><a href="#" class="hover:text-shop-orange transition flex items-center gap-2"><span class="iconify" data-icon="mdi:twitter" data-width="16"></span>Twitter</a></li>
+            <li><a href="#" class="hover:text-shop-orange transition flex items-center gap-2"><span class="iconify" data-icon="mdi:youtube" data-width="16"></span>YouTube</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-shop-border pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
+        <p class="text-xs text-gray-400">© 2025 GlowCare. Semua hak dilindungi.</p>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-400">Negara: 🇮🇩 Indonesia</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+<script>
+// ===================== PRODUCT DATA =====================
+const products = [
+  // SKINTIFIC
+  { id:1, name:"Skintific 5X Ceramide Serum", brand:"Skintific", category:"skintific", subcat:"serum", price:129000, origPrice:259000, sold:23400, rating:4.9, img:"skintific-ceramide-serum", badge:"Flash Sale", city:"Jakarta" },
+  { id:2, name:"Skintific MS2 Pro Sunscreen SPF50+ PA++++", brand:"Skintific", category:"skintific", subcat:"sunscreen", price:115000, origPrice:230000, sold:18900, rating:4.8, img:"skintific-sunscreen", badge:"Best Seller", city:"Jakarta" },
+  { id:3, name:"Skintific AHA BHA PHA Toner 150ml", brand:"Skintific", category:"skintific", subcat:"serum", price:99000, origPrice:165000, sold:12400, rating:4.7, img:"skintific-toner", badge:"", city:"Tangerang" },
+  { id:4, name:"Skintific 5X Ceramide Moisturizer", brand:"Skintific", category:"skintific", subcat:"serum", price:119000, origPrice:199000, sold:15600, rating:4.8, img:"skintific-moisturizer", badge:"Flash Sale", city:"Jakarta" },
+  { id:5, name:"Skintific 5X Ceramide Face Wash", brand:"Skintific", category:"skintific", subcat:"facial", price:89000, origPrice:149000, sold:9800, rating:4.7, img:"skintific-facewash", badge:"", city:"Jakarta" },
+  { id:6, name:"Skintific 2% Retinol Serum", brand:"Skintific", category:"skintific", subcat:"serum", price:145000, origPrice:280000, sold:7600, rating:4.8, img:"skintific-retinol", badge:"New", city:"Tangerang" },
+  // SOMETHINC
+  { id:7, name:"Somethinc 10% Niacinamide Serum", brand:"Somethinc", category:"somethinc", subcat:"serum", price:89000, origPrice:149000, sold:31200, rating:4.8, img:"somethinc-niacinamide", badge:"Best Seller", city:"Bandung" },
+  { id:8, name:"Somethinc Ceramide Skin Barrier Moisturizer", brand:"Somethinc", category:"somethinc", subcat:"serum", price:109000, origPrice:175000, sold:18700, rating:4.7, img:"somethinc-ceramide", badge:"", city:"Bandung" },
+  { id:9, name:"Somethinc Holyshield! UV Watery Sunscreen Gel", brand:"Somethinc", category:"somethinc", subcat:"sunscreen", price:125000, origPrice:189000, sold:22100, rating:4.9, img:"somethinc-sunscreen", badge:"Flash Sale", city:"Bandung" },
+  { id:10, name:"Somethinc Glycolic Acid 7% Toner", brand:"Somethinc", category:"somethinc", subcat:"serum", price:79000, origPrice:135000, sold:14300, rating:4.7, img:"somethinc-glycolic", badge:"", city:"Jakarta" },
+  { id:11, name:"Somethinc 5% Retinol Night Serum", brand:"Somethinc", category:"somethinc", subcat:"serum", price:119000, origPrice:199000, sold:8500, rating:4.8, img:"somethinc-retinol", badge:"New", city:"Bandung" },
+  // WARDAH
+  { id:12, name:"Wardah Perfect Bright Lightening Serum", brand:"Wardah", category:"wardah", subcat:"serum", price:67000, origPrice:89000, sold:45200, rating:4.7, img:"wardah-serum", badge:"Best Seller", city:"Surabaya" },
+  { id:13, name:"Wardah UV Shield SPF50 Sunscreen", brand:"Wardah", category:"wardah", subcat:"sunscreen", price:59000, origPrice:79000, sold:38900, rating:4.6, img:"wardah-sunscreen", badge:"", city:"Surabaya" },
+  { id:14, name:"Wardah Renew You Day Cream", brand:"Wardah", category:"wardah", subcat:"serum", price:54000, origPrice:72000, sold:29700, rating:4.6, img:"wardah-daycream", badge:"", city:"Jakarta" },
+  { id:15, name:"Wardah Perfect Bright Moisturizer", brand:"Wardah", category:"wardah", subcat:"serum", price:49000, origPrice:65000, sold:21400, rating:4.5, img:"wardah-moisturizer", badge:"Flash Sale", city:"Surabaya" },
+  { id:16, name:"Wardah Cushion Perfect Bright", brand:"Wardah", category:"wardah", subcat:"serum", price:89000, origPrice:120000, sold:33100, rating:4.7, img:"wardah-cushion", badge:"Best Seller", city:"Jakarta" },
+  // EMINA
+  { id:17, name:"Emina Sun Battle SPF45 Sunscreen", brand:"Emina", category:"emina", subcat:"sunscreen", price:35000, origPrice:49000, sold:56200, rating:4.5, img:"emina-sunscreen", badge:"Flash Sale", city:"Jakarta" },
+  { id:18, name:"Emina Bright Stuff Glow Toner", brand:"Emina", category:"emina", subcat:"serum", price:29000, origPrice:42000, sold:41800, rating:4.4, img:"emina-toner", badge:"", city:"Tangerang" },
+  { id:19, name:"Emina Glass Skin Serum", brand:"Emina", category:"emina", subcat:"serum", price:45000, origPrice:65000, sold:38900, rating:4.6, img:"emina-serum", badge:"Best Seller", city:"Jakarta" },
+  { id:20, name:"Emina Bright Stuff Face Wash", brand:"Emina", category:"emina", subcat:"facial", price:25000, origPrice:38000, sold:62300, rating:4.4, img:"emina-facewash", badge:"", city:"Jakarta" },
+  // AVOSKIN
+  { id:21, name:"Avoskin Your Skin Bae Series Niacinamide Serum", brand:"Avoskin", category:"avoskin", subcat:"serum", price:149000, origPrice:249000, sold:19200, rating:4.9, img:"avoskin-serum", badge:"Best Seller", city:"Jakarta" },
+  { id:22, name:"Avoskin Perfect Hydrating Treatment Essence", brand:"Avoskin", category:"avoskin", subcat:"serum", price:189000, origPrice:299000, sold:15600, rating:4.8, img:"avoskin-essence", badge:"Flash Sale", city:"Jakarta" },
+  { id:23, name:"Avoskin Your Skin Bae Sunscreen SPF50", brand:"Avoskin", category:"avoskin", subcat:"sunscreen", price:135000, origPrice:210000, sold:17800, rating:4.8, img:"avoskin-sunscreen", badge:"", city:"Tangerang" },
+  { id:24, name:"Avoskin Miraculous Refining Toner", brand:"Avoskin", category:"avoskin", subcat:"serum", price:125000, origPrice:199000, sold:22100, rating:4.9, img:"avoskin-toner", badge:"Best Seller", city:"Jakarta" },
+  // FINALLY FOUND YOU
+  { id:25, name:"Finally Found You Nourishing Rich Moisturizer", brand:"Finally Found You", category:"finallyfoundyou", subcat:"serum", price:159000, origPrice:280000, sold:8700, rating:4.8, img:"ffy-moisturizer", badge:"Flash Sale", city:"Jakarta" },
+  { id:26, name:"Finally Found You Skin Barrier Repair Serum", brand:"Finally Found You", category:"finallyfoundyou", subcat:"serum", price:175000, origPrice:310000, sold:6400, rating:4.9, img:"ffy-serum", badge:"New", city:"Jakarta" },
+  { id:27, name:"Finally Found You Gentle Cleansing Oil", brand:"Finally Found You", category:"finallyfoundyou", subcat:"facial", price:119000, origPrice:199000, sold:5200, rating:4.7, img:"ffy-cleansing", badge:"", city:"Bandung" },
+  { id:28, name:"Finally Found You Sun Shield SPF50 PA++++", brand:"Finally Found You", category:"finallyfoundyou", subcat:"sunscreen", price:139000, origPrice:240000, sold:7100, rating:4.8, img:"ffy-sunscreen", badge:"Best Seller", city:"Jakarta" },
+  // TRUE TO SKIN
+  { id:29, name:"True to Skin Kombucha Probiotic Toner", brand:"True to Skin", category:"truetoskin", subcat:"serum", price:95000, origPrice:165000, sold:11300, rating:4.7, img:"tts-toner", badge:"Best Seller", city:"Surabaya" },
+  { id:30, name:"True to Skin Bakuchiol Retinol Alternative", brand:"True to Skin", category:"truetoskin", subcat:"serum", price:125000, origPrice:210000, sold:8400, rating:4.8, img:"tts-bakuchiol", badge:"", city:"Jakarta" },
+  { id:31, name:"True to Skin Niacinamide + Zinc Serum", brand:"True to Skin", category:"truetoskin", subcat:"serum", price:89000, origPrice:150000, sold:9800, rating:4.7, img:"tts-niacinamide", badge:"Flash Sale", city:"Bandung" },
+  { id:32, name:"True to Skin Centella Calming Gel", brand:"True to Skin", category:"truetoskin", subcat:"serum", price:79000, origPrice:130000, sold:7600, rating:4.6, img:"tts-centella", badge:"", city:"Surabaya" },
+  // BARENBLISS
+  { id:33, name:"Barenbliss Happy Youth Niacinamide Serum", brand:"Barenbliss", category:"barenbliss", subcat:"serum", price:99000, origPrice:175000, sold:7800, rating:4.7, img:"bb-serum", badge:"New", city:"Jakarta" },
+  { id:34, name:"Barenbliss Glow Recipe Lip Tint", brand:"Barenbliss", category:"barenbliss", subcat:"bodycare", price:69000, origPrice:110000, sold:15600, rating:4.6, img:"bb-liptint", badge:"Flash Sale", city:"Jakarta" },
+  { id:35, name:"Barenbliss Pore-Refining Toner", brand:"Barenbliss", category:"barenbliss", subcat:"serum", price:89000, origPrice:145000, sold:5400, rating:4.6, img:"bb-toner", badge:"", city:"Tangerang" },
+  // MS GLOWS
+  { id:36, name:"MS GLOWS 10% Niacinamide + Tranexamic Acid", brand:"MS GLOWS", category:"msglows", subcat:"serum", price:55000, origPrice:99000, sold:28700, rating:4.5, img:"msglows-serum", badge:"Flash Sale", city:"Jakarta" },
+  { id:37, name:"MS GLOWS AHA BHA PHA Clarifying Toner", brand:"MS GLOWS", category:"msglows", subcat:"serum", price:49000, origPrice:85000, sold:22100, rating:4.5, img:"msglows-toner", badge:"Best Seller", city:"Tangerang" },
+  { id:38, name:"MS GLOWS Sunscreen SPF50 UV Protection", brand:"MS GLOWS", category:"msglows", subcat:"sunscreen", price:45000, origPrice:79000, sold:31400, rating:4.4, img:"msglows-sunscreen", badge:"", city:"Jakarta" },
+  // IMPLORA
+  { id:39, name:"Implora UV Aqua Sunscreen Gel SPF45", brand:"Implora", category:"implora", subcat:"sunscreen", price:29000, origPrice:45000, sold:48200, rating:4.3, img:"implora-sunscreen", badge:"Flash Sale", city:"Jakarta" },
+  { id:40, name:"Implora Japanese Cherry Blossom Body Lotion", brand:"Implora", category:"implora", subcat:"bodycare", price:25000, origPrice:38000, sold:39600, rating:4.3, img:"implora-lotion", badge:"", city:"Jakarta" },
+  { id:41, name:"Implora Green Tea Face Toner", brand:"Implora", category:"implora", subcat:"serum", price:22000, origPrice:35000, sold:35100, rating:4.2, img:"implora-toner", badge:"", city:"Tangerang" },
+  // MORE PRODUCTS
+  { id:42, name:"Skintific 5X Ceramide Body Lotion 300ml", brand:"Skintific", category:"skintific", subcat:"bodycare", price:109000, origPrice:189000, sold:11200, rating:4.7, img:"skintific-bodylotion", badge:"", city:"Jakarta" },
+  { id:43, name:"Wardah Lightening Facial Wash", brand:"Wardah", category:"wardah", subcat:"facial", price:32000, origPrice:45000, sold:51200, rating:4.5, img:"wardah-facewash", badge:"Best Seller", city:"Surabaya" },
+  { id:44, name:"Somethinc Incredible Phat Girl Probiotic Cream", brand:"Somethinc", category:"somethinc", subcat:"serum", price:135000, origPrice:210000, sold:9200, rating:4.8, img:"somethinc-phatgirl", badge:"", city:"Bandung" },
+  { id:45, name:"Emina Double Up Lip & Cheek Tint", brand:"Emina", category:"emina", subcat:"bodycare", price:29000, origPrice:42000, sold:47600, rating:4.4, img:"emina-liptint", badge:"", city:"Jakarta" },
+  { id:46, name:"Avoskin Pure Vitality Vitamin C Serum", brand:"Avoskin", category:"avoskin", subcat:"serum", price:165000, origPrice:275000, sold:13400, rating:4.8, img:"avoskin-vitc", badge:"Flash Sale", city:"Jakarta" },
+  { id:47, name:"True to Skin Papaya Enzyme Cleansing Balm", brand:"True to Skin", category:"truetoskin", subcat:"facial", price:99000, origPrice:165000, sold:6800, rating:4.7, img:"tts-cleansingbalm", badge:"New", city:"Bandung" },
+  { id:48, name:"Barenbliss Jelly Lip Mask - Peach", brand:"Barenbliss", category:"barenbliss", subcat:"bodycare", price:59000, origPrice:95000, sold:9300, rating:4.6, img:"bb-lipmask", badge:"", city:"Jakarta" },
+  { id:49, name:"MS GLOWS Retinol 0.5% Night Serum", brand:"MS GLOWS", category:"msglows", subcat:"serum", price:65000, origPrice:120000, sold:16800, rating:4.5, img:"msglows-retinol", badge:"", city:"Jakarta" },
+  { id:50, name:"Implora Aloe Vera Soothing Gel 500ml", brand:"Implora", category:"implora", subcat:"bodycare", price:27000, origPrice:42000, sold:42100, rating:4.3, img:"implora-aloe", badge:"Best Seller", city:"Jakarta" },
+];
+
+// ===================== IMAGE HELPER =====================
+function getImg(seed, w=300, h=300) {
+  return `https://picsum.photos/seed/${seed}/${w}/${h}.jpg`;
+}
+
+// ===================== FORMAT HELPERS =====================
+function formatRp(n) { return 'Rp' + n.toLocaleString('id-ID'); }
+function formatSold(n) { return n >= 1000 ? (n/1000).toFixed(n%1000===0?0:1)+'rb' : n; }
+function discount(orig, sale) { return Math.round((1 - sale/orig) * 100); }
+
+// ===================== STATE =====================
+let cart = [];
+let currentCategory = 'all';
+let currentSearch = '';
+let currentSort = 'popular';
+let bannerIndex = 0;
+let bannerInterval;
+
+// ===================== RENDER FLASH SALE =====================
+function renderFlashSale() {
+  const container = document.getElementById('flashSaleContainer');
+  const flashProducts = products.filter(p => p.badge === 'Flash Sale').slice(0, 8);
+  container.innerHTML = flashProducts.map(p => `
+    <div class="min-w-[140px] sm:min-w-[160px] shrink-0 bg-white border border-shop-border rounded-lg overflow-hidden cursor-pointer product-card" onclick="showProductToast(${p.id})">
+      <div class="relative overflow-hidden">
+        <img src="${getImg(p.img, 300, 300)}" alt="${p.name}" class="w-full h-32 sm:h-40 object-cover prod-img" loading="lazy">
+        <span class="absolute top-0 left-0 bg-shop-orange text-white text-[10px] font-bold px-2 py-0.5 rounded-br-lg">${discount(p.origPrice, p.price)}% OFF</span>
+      </div>
+      <div class="p-2">
+        <p class="text-shop-orange font-bold text-sm">${formatRp(p.price)}</p>
+        <p class="text-gray-400 text-[10px] line-through">${formatRp(p.origPrice)}</p>
+        <div class="mt-1.5 bg-shop-orange/10 rounded-full h-3 overflow-hidden relative">
+          <div class="bg-shop-orange h-full rounded-full" style="width:${Math.min(95, Math.max(30, p.sold/600))}%"></div>
+          <span class="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-shop-orange">TERJUAL ${formatSold(p.sold)}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===================== RENDER PRODUCTS =====================
+function getFilteredProducts() {
+  let filtered = [...products];
+  if (currentCategory !== 'all') {
+    filtered = filtered.filter(p => p.category === currentCategory || p.subcat === currentCategory);
+  }
+  if (currentSearch) {
+    const q = currentSearch.toLowerCase();
+    filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.subcat.toLowerCase().includes(q));
+  }
+  switch(currentSort) {
+    case 'newest': filtered.sort((a,b) => b.id - a.id); break;
+    case 'price-low': filtered.sort((a,b) => a.price - b.price); break;
+    case 'price-high': filtered.sort((a,b) => b.price - a.price); break;
+    case 'sale': filtered.sort((a,b) => discount(b.origPrice,b.price) - discount(a.origPrice,a.price)); break;
+    default: filtered.sort((a,b) => b.sold - a.sold);
+  }
+  return filtered;
+}
+
+function renderProducts() {
+  const grid = document.getElementById('productGrid');
+  const noProds = document.getElementById('noProducts');
+  const title = document.getElementById('productTitle');
+  const filtered = getFilteredProducts();
+
+  if (currentCategory !== 'all') {
+    const catNames = { skintific:'SKINTIFIC', somethinc:'SOMETHINC', wardah:'WARDAH', emina:'EMINA', avoskin:'AVOSKIN', finallyfoundyou:'FINALLY FOUND YOU', truetoskin:'TRUE TO SKIN', barenbliss:'BARENBLISS', msglows:'MS GLOWS', implora:'IMPLORA', facial:'FACIAL WASH', sunscreen:'SUNSCREEN', serum:'SERUM', bodycare:'BODY CARE' };
+    title.textContent = (catNames[currentCategory] || currentCategory.toUpperCase());
+  } else if (currentSearch) {
+    title.textContent = `Hasil pencarian "${currentSearch}"`;
+  } else {
+    title.textContent = 'REKOMENDASI HARIAN';
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    noProds.classList.remove('hidden');
+    return;
+  }
+  noProds.classList.add('hidden');
+
+  grid.innerHTML = filtered.map(p => {
+    const disc = discount(p.origPrice, p.price);
+    const stars = '★'.repeat(Math.floor(p.rating)) + (p.rating % 1 >= 0.5 ? '½' : '');
+    return `
+    <div class="product-card bg-white rounded-xl overflow-hidden shadow-sm border border-shop-border/50 cursor-pointer" onclick="showProductToast(${p.id})">
+      <div class="relative overflow-hidden">
+        <img src="${getImg(p.img, 300, 300)}" alt="${p.name}" class="w-full h-36 sm:h-44 object-cover prod-img" loading="lazy">
+        ${p.badge ? `<span class="absolute top-2 left-2 ${p.badge==='Flash Sale'?'bg-shop-orange':p.badge==='Best Seller'?'bg-red-500':'bg-green-500'} text-white text-[9px] font-bold px-2 py-0.5 rounded">${p.badge}</span>` : ''}
+        <button onclick="event.stopPropagation();addToCart(${p.id})" class="absolute bottom-2 right-2 w-8 h-8 bg-white/90 hover:bg-shop-orange hover:text-white text-shop-orange rounded-full flex items-center justify-center shadow-md transition">
+          <span class="iconify" data-icon="mdi:cart-plus" data-width="16"></span>
+        </button>
+      </div>
+      <div class="p-2.5">
+        <p class="text-xs text-gray-800 line-clamp-2 leading-relaxed mb-1.5 min-h-[32px]">${p.name}</p>
+        <div class="flex items-end gap-1.5 mb-1">
+          <span class="text-shop-orange font-bold text-sm">${formatRp(p.price)}</span>
+          <span class="text-gray-400 text-[10px] line-through">${formatRp(p.origPrice)}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="bg-shop-orange/10 text-shop-orange text-[9px] font-bold px-1.5 py-0.5 rounded">${disc}% OFF</span>
+          <div class="flex items-center gap-0.5">
+            <span class="text-shop-star text-[10px]">★</span>
+            <span class="text-[10px] text-gray-500">${p.rating}</span>
+            <span class="text-[10px] text-gray-300 ml-0.5">|</span>
+            <span class="text-[10px] text-gray-400">${formatSold(p.sold)} terjual</span>
+          </div>
+        </div>
+        <p class="text-[10px] text-gray-400 mt-1.5 flex items-center gap-0.5">
+          <span class="iconify" data-icon="mdi:map-marker-outline" data-width="10"></span>${p.city}
+        </p>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===================== CATEGORY FILTER =====================
+function filterCategory(cat) {
+  currentCategory = cat;
+  currentSearch = '';
+  document.getElementById('searchInput').value = '';
+  // Update button styles
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    if (btn.dataset.cat === cat) {
+      btn.classList.remove('bg-gray-100','text-gray-700');
+      btn.classList.add('bg-shop-orange','text-white');
+    } else {
+      btn.classList.remove('bg-shop-orange','text-white');
+      btn.classList.add('bg-gray-100','text-gray-700');
+    }
+  });
+  renderProducts();
+  document.getElementById('productGrid').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function resetFilters() {
+  currentCategory = 'all';
+  currentSearch = '';
+  document.getElementById('searchInput').value = '';
+  filterCategory('all');
+}
+
+// ===================== SEARCH =====================
+function searchProducts() {
+  currentSearch = document.getElementById('searchInput').value.trim();
+  currentCategory = 'all';
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    if (btn.dataset.cat === 'all') {
+      btn.classList.remove('bg-gray-100','text-gray-700');
+      btn.classList.add('bg-shop-orange','text-white');
+    } else {
+      btn.classList.remove('bg-shop-orange','text-white');
+      btn.classList.add('bg-gray-100','text-gray-700');
+    }
+  });
+  renderProducts();
+}
+function quickSearch(term) {
+  document.getElementById('searchInput').value = term;
+  searchProducts();
+}
+
+// ===================== SORT =====================
+function sortProducts() {
+  currentSort = document.getElementById('sortSelect').value;
+  renderProducts();
+}
+
+// ===================== CART =====================
+function addToCart(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  const existing = cart.find(x => x.id === id);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ ...p, qty: 1 });
+  }
+  updateCartBadge();
+  showToast(`${p.name.substring(0,30)}... ditambahkan ke keranjang!`, 'success');
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(x => x.id !== id);
+  renderCart();
+  updateCartBadge();
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(x => x.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) { removeFromCart(id); return; }
+  renderCart();
+  updateCartBadge();
+}
+
+function updateCartBadge() {
+  const badge = document.getElementById('cartBadge');
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  if (total > 0) {
+    badge.textContent = total > 99 ? '99+' : total;
+    badge.classList.remove('hidden');
+    badge.classList.add('pulse-badge');
+    setTimeout(() => badge.classList.remove('pulse-badge'), 300);
+  } else {
+    badge.classList.add('hidden');
+  }
+}
+
+function toggleCart() {
+  const overlay = document.getElementById('cartOverlay');
+  const sidebar = document.getElementById('cartSidebar');
+  if (sidebar.classList.contains('hidden')) {
+    overlay.classList.remove('hidden');
+    sidebar.classList.remove('hidden');
+    sidebar.classList.add('flex', 'slide-in');
+    renderCart();
+  } else {
+    overlay.classList.add('hidden');
+    sidebar.classList.add('hidden');
+    sidebar.classList.remove('flex', 'slide-in');
+  }
+}
+
+function renderCart() {
+  const container = document.getElementById('cartItems');
+  const footer = document.getElementById('cartFooter');
+  const empty = document.getElementById('emptyCart');
+
+  if (cart.length === 0) {
+    container.innerHTML = `<div class="text-center py-16">
+      <span class="iconify text-gray-300 mx-auto" data-icon="mdi:cart-outline" data-width="64"></span>
+      <p class="text-gray-400 mt-3 text-sm">Keranjang masih kosong</p>
+      <button onclick="toggleCart()" class="mt-3 text-shop-orange text-sm font-semibold hover:underline">Mulai Belanja</button>
+    </div>`;
+    footer.classList.add('hidden');
+    return;
+  }
+
+  footer.classList.remove('hidden');
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  document.getElementById('cartTotal').textContent = formatRp(total);
+  document.getElementById('checkoutCount').textContent = cart.reduce((s,i) => s+i.qty, 0);
+
+  container.innerHTML = cart.map(item => `
+    <div class="flex gap-3 p-3 bg-gray-50 rounded-lg fade-in">
+      <img src="${getImg(item.img, 100, 100)}" class="w-16 h-16 rounded-lg object-cover shrink-0" alt="">
+      <div class="flex-1 min-w-0">
+        <p class="text-xs text-gray-800 line-clamp-2 leading-relaxed">${item.name}</p>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="text-shop-orange font-bold text-sm">${formatRp(item.price)}</span>
+          <span class="text-gray-400 text-[10px] line-through">${formatRp(item.origPrice)}</span>
+        </div>
+        <div class="flex items-center justify-between mt-2">
+          <div class="flex items-center border border-shop-border rounded-lg overflow-hidden">
+            <button onclick="changeQty(${item.id},-1)" class="qty-btn w-7 h-7 flex items-center justify-center text-xs hover:bg-gray-100 transition">−</button>
+            <span class="w-8 h-7 flex items-center justify-center text-xs font-semibold border-x border-shop-border">${item.qty}</span>
+            <button onclick="changeQty(${item.id},1)" class="qty-btn w-7 h-7 flex items-center justify-center text-xs hover:bg-gray-100 transition">+</button>
+          </div>
+          <button onclick="removeFromCart(${item.id})" class="text-gray-400 hover:text-red-500 transition">
+            <span class="iconify" data-icon="mdi:delete-outline" data-width="18"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function checkout() {
+  if (cart.length === 0) return;
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const count = cart.reduce((s,i) => s+i.qty, 0);
+  showToast(`Checkout berhasil! ${count} item — Total ${formatRp(total)}`, 'success');
+  cart = [];
+  toggleCart();
+  updateCartBadge();
+}
+
+// ===================== PRODUCT TOAST (Quick View) =====================
+function showProductToast(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  const disc = discount(p.origPrice, p.price);
+  showToast(`${p.name} — ${formatRp(p.price)} (${disc}% OFF)`, 'info');
+}
+
+// ===================== TOAST =====================
+function showToast(message, type='info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  const colors = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-gray-800';
+  const icon = type === 'success' ? 'mdi:check-circle' : type === 'error' ? 'mdi:alert-circle' : 'mdi:information';
+  toast.className = `toast ${colors} text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 max-w-sm text-sm`;
+  toast.innerHTML = `<span class="iconify shrink-0" data-icon="${icon}" data-width="18"></span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+// ===================== AUTH MODAL =====================
+function openAuthModal(type) {
+  document.getElementById('authOverlay').classList.remove('hidden');
+  if (type === 'login') {
+    document.getElementById('authLogin').classList.remove('hidden');
+    document.getElementById('authRegister').classList.add('hidden');
+    document.getElementById('authTitle').textContent = 'Masuk';
+  } else {
+    document.getElementById('authLogin').classList.add('hidden');
+    document.getElementById('authRegister').classList.remove('hidden');
+    document.getElementById('authTitle').textContent = 'Daftar';
+  }
+}
+function closeAuthModal() {
+  document.getElementById('authOverlay').classList.add('hidden');
+}
+function doLogin() {
+  showToast('Login berhasil! Selamat berbelanja 🎉', 'success');
+  closeAuthModal();
+}
+function doRegister() {
+  showToast('Registrasi berhasil! Silakan login 🎉', 'success');
+  openAuthModal('login');
+}
+
+// ===================== BANNER CAROUSEL =====================
+function goToBanner(i) {
+  bannerIndex = i;
+  document.getElementById('bannerContainer').style.transform = `translateX(-${i * 100}%)`;
+  document.querySelectorAll('.banner-dot').forEach((d, idx) => {
+    d.classList.toggle('active', idx === i);
+  });
+}
+function nextBanner() { goToBanner((bannerIndex + 1) % 3); }
+function prevBanner() { goToBanner((bannerIndex - 1 + 3) % 3); }
+function startBannerInterval() { bannerInterval = setInterval(nextBanner, 4000); }
+function resetBannerInterval() { clearInterval(bannerInterval); startBannerInterval(); }
+
+document.querySelectorAll('.banner-dot').forEach((d, i) => d.addEventListener('click', () => { goToBanner(i); resetBannerInterval(); }));
+
+// ===================== COUNTDOWN TIMER =====================
+function startCountdown() {
+  let total = 8*3600 + 45*60 + 30;
+  setInterval(() => {
+    if (total <= 0) total = 10*3600;
+    total--;
+    const h = Math.floor(total/3600);
+    const m = Math.floor((total%3600)/60);
+    const s = total%60;
+    document.getElementById('cdH').textContent = String(h).padStart(2,'0');
+    document.getElementById('cdM').textContent = String(m).padStart(2,'0');
+    document.getElementById('cdS').textContent = String(s).padStart(2,'0');
+  }, 1000);
+}
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => {
+  renderFlashSale();
+  renderProducts();
+  startBannerInterval();
+  startCountdown();
+});
+</script>
+
+</body>
+</html>
